@@ -4,15 +4,14 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.cm as cm
 import numpy as np
 
-def demo_imagerepresentation():
-	im = np.zeros ((16,16),dtype=np.uint8)
+def demo_imagerepresentation(xres, yres):
+	im = np.zeros ((xres, yres),dtype=np.uint8)
 	im[2,2] = 255
 
 	fig = plt.figure(1)
 	plot = fig.add_subplot(1,1,1)	
 	ax = plot.imshow(im, cm.gray, interpolation = 'none')
-
-	plt.show()
+	#+plt.show()
 
 	# represent same data as 1D array
 	im_linear = im.ravel()
@@ -29,25 +28,13 @@ def demo_imagerepresentation():
 
 	#plt.draw()
 	#praw_input()
-	# ax.set_data(im)
+	ax.set_data(im)
 	#fig.canvas.draw() # Tk error?
 	#plt.show()
 	# second plot not shown?
 	plt.show()
 
-if __name__=='__main__':
-
-	demo_imagerepresentation()
-
-	print "Part 2"
-
-	xres = 20
-	yres = 20
-
-
-#	im_r = np.zeros ((64,64),dtype=np.uint8)
-#	im_g = np.zeros ((64,64),dtype=np.uint8)
-#	im_b = np.zeros ((64,64),dtype=np.uint8)
+def generate_gradient_components(xres, yres):
 
 	im_r = np.linspace (255, 0, num=xres*yres, endpoint=True) 
 	im_r.shape = (xres,yres)
@@ -56,6 +43,8 @@ if __name__=='__main__':
 	im_b = np.linspace (128, 384, num=xres*yres, endpoint=True) 
 	im_b.shape = (xres,yres)
 	im_b= im_b.transpose()
+
+
 
 	im_rgb = np.zeros((xres,yres,3), dtype=np.uint8)
 
@@ -68,9 +57,12 @@ if __name__=='__main__':
 	#  im=im_rgb.view(dtype=[('r', 'u1'), ('g', 'u1'), ('b', 'u1')]) [:,:,0]
 	#  im['r'] = .......
 
+	return im_r, im_g, im_b, im_rgb
 
-	fig = plt.figure(2, (8., 8.)) 
-	grid = ImageGrid(fig, 222, # similar to subplot(111)
+
+def demo_components(im_r, im_g, im_b, im_rgb):
+	fig = plt.figure(2) 
+	grid = ImageGrid(fig, 222, 
 	                nrows_ncols = (2, 2), # creates 2x2 grid of axes
 	                axes_pad = 0.1, # pad between axes in inch.
 	                )
@@ -83,9 +75,8 @@ if __name__=='__main__':
 
 	plt.show()
 
-	print "Part 3"
-
-	fig = plt.figure(3, (8., 8.)) 
+def demo_compositing(im_r, im_g, im_b, im_rgb):
+	fig = plt.figure(3) 
 	grid = ImageGrid(fig, 222, # similar to subplot(111)
 	                nrows_ncols = (2, 2), # creates 2x2 grid of axes
 	                axes_pad = 0.1, # pad between axes in inch.
@@ -95,6 +86,8 @@ if __name__=='__main__':
 	cm_green = LinearSegmentedColormap.from_list('cm_black_green', [cm.colors.cnames['black'], cm.colors.cnames['green']])
 	cm_blue= LinearSegmentedColormap.from_list('cm_black_blue', [cm.colors.cnames['black'], cm.colors.cnames['blue']])
 
+	im_grid = [im_r, im_g, im_b, im_rgb]
+
 	color_maps = [cm_red, cm_green, cm_blue, None]
 
 	for i in range(4):
@@ -103,5 +96,22 @@ if __name__=='__main__':
 
 
 	plt.show()
+
+
+
+if __name__=='__main__':
+
+	print "Part 1 - Image as number array"
+	demo_imagerepresentation(24, 16)
+
+	print "Part 2 - Color image components"
+
+	im_r, im_g, im_b, im_rgb = generate_gradient_components(20, 20)
+
+	demo_components(im_r, im_g, im_b, im_rgb)
+	
+	print "Part 3 - Color image compositing"
+
+	demo_compositing(im_r, im_g, im_b, im_rgb)
 
 	print "End"
