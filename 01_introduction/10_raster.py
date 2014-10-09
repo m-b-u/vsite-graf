@@ -11,7 +11,7 @@ def demo_imagerepresentation(xres, yres):
 	fig = plt.figure(1)
 	plot = fig.add_subplot(1,1,1)	
 	ax = plot.imshow(im, cm.gray, interpolation = 'none')
-	#+plt.show()
+	plt.show()
 
 	# represent same data as 1D array
 	im_linear = im.ravel()
@@ -19,19 +19,11 @@ def demo_imagerepresentation(xres, yres):
 	im_linear[0] = 255
 	im_linear[-1] = 64
 
-	#plot = fig.add_subplot (2,1,1)
-	# just for the need of imshow
-	#im_ = np.reshape(im, (1,np.product(im.shape)))
-	#ax = plot.imshow(im_, cm.gray, interpolation = 'none')
+	fig = plt.figure()
+	plot = fig.add_subplot(1,1,1)	
+	ax = plot.imshow(im, cm.gray, interpolation = 'none')
+	
 
-	#plt.tight_layout()
-
-	#plt.draw()
-	#praw_input()
-	ax.set_data(im)
-	#fig.canvas.draw() # Tk error?
-	#plt.show()
-	# second plot not shown?
 	plt.show()
 
 def generate_gradient_components(xres, yres):
