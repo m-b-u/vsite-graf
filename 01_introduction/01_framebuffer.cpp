@@ -17,7 +17,7 @@ void clear_framebuffer( unsigned char (&A)[N][M] ) {
 */
   for (unsigned i = 0; i < N; ++i) {
     for (unsigned j = 0; j < M; ++j) {
-      A[i][j] = '.';
+      A[i][j] = '.';  // dot is our 0 or black, for a bit nicer output.
     }
   }
 }
