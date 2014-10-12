@@ -37,4 +37,5 @@ if __name__=='__main__':
 
     axis[1].imshow(gray, cmap = cmap, aspect = 1)
     axis[1].set_title(cmap_name)
+
     plt.show()

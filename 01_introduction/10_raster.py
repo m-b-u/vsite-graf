@@ -5,8 +5,8 @@ import matplotlib.cm as cm
 import numpy as np
 
 def demo_imagerepresentation(xres, yres):
-	im = np.zeros ((xres, yres),dtype=np.uint8)
-	im[2,2] = 255
+	im = np.zeros ((yres, xres),dtype=np.uint8)
+	im[2,3] = 255
 
 	fig = plt.figure(1)
 	plot = fig.add_subplot(1,1,1)	
@@ -17,13 +17,19 @@ def demo_imagerepresentation(xres, yres):
 	im_linear = im.ravel()
 	# turn the first 'pixel' on
 	im_linear[0] = 255
+        # turn the last 'pixel' on
 	im_linear[-1] = 64
+        
+        im[5,3] = 255
+        im[5,4] = 200
 
-	fig = plt.figure()
-	plot = fig.add_subplot(1,1,1)	
-	ax = plot.imshow(im, cm.gray, interpolation = 'none')
+	fig, axis = plt.subplots(2)
+	axis[0].imshow(im, cm.gray, interpolation = 'none')
+        axis[0].set_title('2D view')
+        axis[1].imshow(im.reshape(1, -1), cm.gray, interpolation = 'none', aspect = 7)
+        axis[1].get_yaxis().set_visible(False)
+        axis[1].set_title('1D view')
 	
-
 	plt.show()
 
 def generate_gradient_components(xres, yres):
@@ -35,8 +41,6 @@ def generate_gradient_components(xres, yres):
 	im_b = np.linspace (128, 384, num=xres*yres, endpoint=True) 
 	im_b.shape = (xres,yres)
 	im_b= im_b.transpose()
-
-
 
 	im_rgb = np.zeros((xres,yres,3), dtype=np.uint8)
 
@@ -63,20 +67,23 @@ def demo_components(im_r, im_g, im_b, im_rgb):
 
 	for i in range(3):   # Do not show the composite image yet
 		cmap = cm.gray if i < 3 else None
-		grid[i].imshow(im_grid[i], cmap = cmap, interpolation = 'none') # The AxesGrid object work as a list of axes.
+		grid[i].imshow(im_grid[i], cmap = cmap, interpolation = 'nearest') # The AxesGrid object work as a list of axes.
 
 	plt.show()
 
 def demo_compositing(im_r, im_g, im_b, im_rgb):
 	fig = plt.figure(3) 
-	grid = ImageGrid(fig, 222, # similar to subplot(111)
-	                nrows_ncols = (2, 2), # creates 2x2 grid of axes
-	                axes_pad = 0.1, # pad between axes in inch.
+	grid = ImageGrid(fig, 222, 
+	                nrows_ncols = (2, 2), 
+	                axes_pad = 0.1, 
 	                )
 
-	cm_red = LinearSegmentedColormap.from_list('cm_black_red', [cm.colors.cnames['black'], cm.colors.cnames['red']]) 
-	cm_green = LinearSegmentedColormap.from_list('cm_black_green', [cm.colors.cnames['black'], cm.colors.cnames['green']])
-	cm_blue= LinearSegmentedColormap.from_list('cm_black_blue', [cm.colors.cnames['black'], cm.colors.cnames['blue']])
+	cm_red = LinearSegmentedColormap.from_list('cm_black_red',
+                                                   [cm.colors.cnames['black'], cm.colors.cnames['red']]) 
+	cm_green = LinearSegmentedColormap.from_list('cm_black_green', 
+                                                     [cm.colors.cnames['black'], cm.colors.cnames['green']])
+	cm_blue= LinearSegmentedColormap.from_list('cm_black_blue', 
+                                                   [cm.colors.cnames['black'], cm.colors.cnames['blue']])
 
 	im_grid = [im_r, im_g, im_b, im_rgb]
 
@@ -84,7 +91,8 @@ def demo_compositing(im_r, im_g, im_b, im_rgb):
 
 	for i in range(4):
 		cmap = color_maps[i]
-		grid[i].imshow(im_grid[i], cmap = cmap, interpolation = 'none') # The AxesGrid object work as a list of axes.
+		grid[i].imshow(im_grid[i], cmap = cmap, interpolation = 'nearest') 
+# The AxesGrid object work as a list of axes.
 
 
 	plt.show()
@@ -94,7 +102,7 @@ def demo_compositing(im_r, im_g, im_b, im_rgb):
 if __name__=='__main__':
 
 	print "Part 1 - Image as number array"
-	demo_imagerepresentation(24, 16)
+	demo_imagerepresentation(20, 10)
 
 	print "Part 2 - Color image components"
 
