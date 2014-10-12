@@ -1,6 +1,8 @@
 #define M 20
 #define N 10
 
+// N rows, M columns
+
 #import <iostream>
 
 using namespace std;
