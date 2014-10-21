@@ -8,7 +8,7 @@ def line_dda(img, x1, y1, x2, y2, value, putpixel=putpixel):
         m = (y2 - y1) / (x2 - x1)
         one_over_m = 1/m
     except ZeroDivisionError:
-        m = 1e9 # some large error, won' really be used. One over m will stay 0
+        m = 1e9 # some large number, won't really be used. One over m will stay 0
     error = []
     if abs(m) <= 1:
         dy = m
