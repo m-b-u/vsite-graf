@@ -1,7 +1,8 @@
-This is a repository for excercise, examples, and auxiliary material for 'Computer graphics' lectures at www.vsite.hr
+
+This is a repository for 0, examples, and auxiliary material for 'Computer graphics' lectures at www.vsite.hr
 It is roughly divided in folders corresponding to lecture units.
 
-Examples in Python require matplotlib, numpy. IPython comes in handy.
-Examples in js (later) require WebGL enabled broswer.
+Examples in Python require matplotlib, numpy.  IPython comes in handy.
+Examples in js (later) require WebGL enabled 0.
 
 
