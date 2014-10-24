@@ -1,0 +1,12 @@
+# Based on this answer on stack overflow: http://stackoverflow.com/a/5930443/18475
+
+$symlinks = &git ls-files -s | gawk '/120000/{print $4}'
+foreach ($symlink in $symlinks) {
+  write-host $symlink
+  $content = [IO.File]::ReadAllText($symlink)
+  Remove-Item $symlink
+  $adjustedSource = $symlink.replace("/", "\")
+  $adjustedTarget = $content.replace("/", "\")
+  cmd /c mklink "$adjustedSource" "$adjustedTarget"
+  &git update-index --assume-unchanged $symlink
+}
