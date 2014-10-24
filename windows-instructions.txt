@@ -1,9 +1,6 @@
-Since Windows has problems with symlinks, when you checkout symlinks, it will create files with paths.
+Since Windows has problems with symlinks, when you checkout symlinks, it will create files with paths from symlinks.
 On Windows Vista and above, do this to convert to symlinks:
 
-1. Open Powershell and position yourself in the root of the repository (in Github for Windows right-click on the repository and press open in Git Shell
-2. Run these two lines:
-$script = [IO.File]::ReadAllText('.\symlinks.ps')
-invoke-expression $script
-
-NOTE: Be careful not to run this if symlinks are already created or it will create a symlink from the content of the symlink!
+1. Open GitHub for Windows, right-click on the repository and press open in Git Shell (Powershell needs to be your preferred shell)
+2. Execcute the following line
+.\symlinks.ps1
