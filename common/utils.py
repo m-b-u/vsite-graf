@@ -23,6 +23,13 @@ def putpixel(img, x, y, value):
     except:
         print "Coordinates: (", x, y, ") out of bounds"
 
+def getpixel(img, x, y):
+    return img[y][x]
+
+
+def get_image_size(img):
+    assert(img.ndim == 2) 
+    return (img.shape[1], img.shape[0])
 
 def plt_show():
     global fig_format
