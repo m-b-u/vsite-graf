@@ -1,6 +1,6 @@
 from utils import get_grayscale_image, putpixel, plt_show
 
-from polygon import draw_convex_polygon
+from polygon import draw_convex_polygon, plot_polygon
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -17,7 +17,8 @@ img = get_grayscale_image(xres, yres)
 poly1 = [ (0, 0), (100, 0), (100, 50), (75, 75), (50, 50), (25,75), (0, 50) ]
 
 poly2 = [ (0, 50), (25, 75), (50, 50), (75, 75), (100, 50), (100, 100), (0, 100)]
-
+plot_polygon(ax, poly1, 'y')
+plot_polygon(ax, poly2, 'w')
 draw_convex_polygon(img, poly1, 200)
 draw_convex_polygon(img, poly2, 100)
 
@@ -34,13 +35,16 @@ draw_convex_polygon(img, poly2, 100)
 
 
 ## issues. Either first or last scanline should have exactly one pixel
-draw_convex_polygon(img, [ (40, 40), (30, 50), (40, 60) , (50, 50) ], 255)
+poly3 =  [ (42, 42), (32, 52), (42, 62) , (52, 52) ]
+draw_convex_polygon(img, poly3, 255)
+plot_polygon(ax, poly3, 'r')
 
 ## issue, considering only right edge:
 #Y: 11 considering edges: [(20, 30, ((30, 10), (30, 20)))]
 #Intersections at y:  [30]
-draw_convex_polygon(img, [ (10, 10), (30, 10), (30, 20) , (10, 20) ], 255)
-
+poly4 = [ (10, 10), (30, 10), (30, 20) , (10, 20) ]
+draw_convex_polygon(img, poly4, 255)
+plot_polygon(ax, poly4, 'g')
 
 ax.imshow(img, cm.gray, interpolation = 'nearest')
 

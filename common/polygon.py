@@ -3,6 +3,11 @@ import itertools
 
 import bisect
 
+def plot_polygon(axis, p, color='b'):
+    p2 = p[:]
+    p2.append (p[0])
+    axis.plot( *zip(*p2), color=color, marker='o', markersize=3, linestyle='-' )
+
 def orient_up(p1, p2):
     """ Orient the line so that the first point has smaller y value [1] """
     if p1[1] > p2[1]:
