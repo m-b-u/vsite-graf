@@ -11,9 +11,15 @@ import numpy as np
 
 fig, ax = plt.subplots(1)
 
-xres, yres = 100, 80
+xres, yres = 160, 120
 img = get_grayscale_image(xres, yres)
 
+poly1 = [ (0, 0), (100, 0), (100, 50), (75, 75), (50, 50), (25,75), (0, 50) ]
+
+poly2 = [ (0, 50), (25, 75), (50, 50), (75, 75), (100, 50), (100, 100), (0, 100)]
+
+draw_convex_polygon(img, poly1, 200)
+draw_convex_polygon(img, poly2, 100)
 
 #poly = [ (0, 0), (1, 0), (1, 1), (-0.5, 2), (-1.2, 1.5) ]
 #
@@ -25,20 +31,6 @@ img = get_grayscale_image(xres, yres)
 #    print "Poly: ", p
 #    draw_convex_polygon(img, p.astype(np.int32), 255)
 
-
-
-
-
-ticks = np.linspace (0, min(xres,yres) -1, endpoint=True, num = 9).astype(np.int32)
-x, y = np.meshgrid(ticks, ticks)
-pts = np.dstack ( (y, x) )
-
-c = 0
-
-for i in xrange(pts.shape[0]-1 ):
-    for j in xrange(pts.shape[1]-1):
-        draw_convex_polygon( img, [ pts[j][i], pts[j+1][i], pts[j+1][i+1], pts[j][i+1]] , (((i+j) % 2) + 1 ) * 100)
-        c += 1
 
 
 ## issues. Either first or last scanline should have exactly one pixel
