@@ -42,7 +42,7 @@ plot_polygon(ax, poly3, 'r')
 ## issue, considering only right edge:
 #Y: 11 considering edges: [(20, 30, ((30, 10), (30, 20)))]
 #Intersections at y:  [30]
-poly4 = [ (10, 10), (30, 10), (30, 20) , (10, 20) ]
+poly4 = [ (10, 10), (30, 10), (30, 20) , (20, 20) ]
 draw_convex_polygon(img, poly4, 255)
 plot_polygon(ax, poly4, 'g')
 

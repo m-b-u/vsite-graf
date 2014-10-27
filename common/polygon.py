@@ -43,23 +43,27 @@ def edge_y_ordered (edge):
 def add_entering_edges(active_edges, edges, edge_idx, y):
     last_added = len(edges)
     print "Checking edge: ", edges[0], y
+    #edge_idx = 0
     while edge_idx < len(edges): # also stop when ymin goes above y
         e = edges[edge_idx]
-        edge_idx += 1
+        print "Checking edge: ", e, y
         ymin, ymax, flipped = edge_y_ordered(e)
+
+        edge_idx += 1
+        if ymin > y:
+            return edge_idx - 1
         if y == ymin: # enter on ymin (top is included)
             if ymax == y: # edge is starting and ending on same scanline. Skip it
                 continue
             xmin = min(e[0][0], e[1][0])
             active_edges.append( (ymax, xmin, e) )    # add slope instead of edge
             last_added = edge_idx - 1
-            print "appending edge, idx, y: ", active_edges[-1], edge_idx, y
-        if edge_idx<len(edges):
-            print "Checking edge: ", edges[edge_idx], y
+            print "Adding edge, idx, y: ", active_edges[-1], edge_idx, y
+
     # use bisect here, but for now:
     active_edges.sort(lambda l1, l2: int(l1[1] - l2[1]))      # sort active edges by xmin
     #maybe not even sort these, but just intersection pts
-    return last_added
+    return last_added + 1
 
 def remove_leaving_edges(active_edge, y):
     for i in xrange(len(active_edge)-1, -1, -1): # from last edge to first
@@ -71,16 +75,16 @@ def draw_convex_polygon(img, points, val):
     # Create list of edges from points [ (p0, p1), (p1, p2), ... , (pn-1, p0) ]
     edge = [orient_up(a,b) for (a, b) in itertools.izip_longest(points, points[1:], fillvalue=points[0])]
     
-    print edge
-    
     edge.sort(lambda l1, l2: int(min(l1[0][1],l1[1][1]) - min(l2[0][1],l2[1][1]) ) )    # sort by smaller y. We now have some redundancy. Maybe eliminate flipping of the edges. Not the fastest way to sort with comparison like this
+    print "*" * 50
+    for i, e in edge:
+        print i, ": ", e
 
     active_edge = []
     edge_idx = 0 # edges up to here are being processed
     for y in xrange(edge[0][0][1], edge[-1][1][1]+1): # from the smallest  to largest y in any edge
         print "Y: ", y
         edge_idx = add_entering_edges(active_edge,edge, edge_idx, y)
-        remove_leaving_edges(active_edge, y)
         print "Y: %s considering edges: %s" % (y, str(active_edge))
         intersections = get_intersection_points(active_edge, y)
         print "Intersections at y: ", intersections
@@ -88,5 +92,5 @@ def draw_convex_polygon(img, points, val):
             if i%2 == 0:   # they should always come in pairs
                 print "I'm drawing a line: (%s, %s) - (%s, %s)" % (pt, y, intersections[i+1], y)
                 img[y][pt:intersections[i+1]] = val  # fill the scanline part
-                
+        remove_leaving_edges(active_edge, y)
     print "Finished: edges: ", active_edge
