@@ -28,7 +28,7 @@ def getpixel(img, x, y):
 
 
 def get_image_size(img):
-    assert(img.ndim == 2) 
+    assert(img.ndim == 2 or (img.ndim == 3 and img.shape[2] in (3, 4) )) 
     return (img.shape[1], img.shape[0])
 
 def plt_show():
