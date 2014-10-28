@@ -1,3 +1,18 @@
+
+""" Miscelaneous utility functions for VSITE Computer Graphics
+
+
+Attributes:
+
+FIG_FORMAT (string): Set from FIG_FORMAT environment variable.
+  Will be passed to savefig if set. Figures will be just saved to files,
+  no interactive display
+
+FIG_RESOLUTION (string): Set from FIG_RESOLUTION environment variable.
+  Will be used to specify DPI for saving figures in case FIG_FORMAT is set.
+
+"""
+
 import numpy as np
 
 import sys
@@ -5,47 +20,73 @@ import os.path
 import os
 import matplotlib.pyplot as plt
 
-fig_format = os.environ.get('FIG_FORMAT', None)
-fig_resolution = os.environ.get('FIG_RESOLUTION', None)
+FIG_FORMAT = os.environ.get('FIG_FORMAT', None)
+FIG_RESOLUTION = os.environ.get('FIG_RESOLUTION', None)
 
 
 def get_grayscale_image(xres, yres):
-    return np.zeros( (yres, xres), dtype=np.uint8 )
+    """ Creates new, zeroed array of yres rows and xres columns,
+    of data type uint8 """
+    return np.zeros((yres, xres), dtype=np.uint8)
 
 def get_rgb_image(xres, yres):
+    """ Creates new, zeroed array, with shape (xres, yres, 3)
+    representing RGB image
+
+    Returns: tuple with two views to array, one (xres, yres, 3)
+    and other structured view, with fields 'r', 'g', 'b' for
+    individual component images (used as im['r'], im['g'], im['b'])
+    """
     im_rgb = np.zeros((yres, xres, 3), dtype=np.uint8)
-    im=im_rgb.view(dtype=[('r', 'u1'), ('g', 'u1'), ('b', 'u1')]) [:,:,0]
-    return im_rgb, im
+    img = im_rgb.view(dtype=[('r', 'u1'), ('g', 'u1'), ('b', 'u1')]) [:, :, 0]
+    return im_rgb, img
 
 def putpixel(img, x, y, value):
+    """ Sets the in image array to given value
+
+    y translates to row in matrix, x to column
+    Does not check for out of bounds error, in fact masks IndexError exception
+
+    Returns: Nothing
+
+    """
     try:
         img[y][x] = value
-    except:
+    except IndexError:
         print "Coordinates: (", x, y, ") out of bounds"
 
 def getpixel(img, x, y):
+    """ Returns the value in image array on given position
+
+    Depending on image type will be either one value or
+    array of length 3 or 4 (RGB or RGBA)
+    """
+
     return img[y][x]
 
 
 def get_image_size(img):
-    assert(img.ndim == 2 or (img.ndim == 3 and img.shape[2] in (3, 4) )) 
+    """ Returns the width and height of the image array """
+    assert img.ndim == 2 or (img.ndim == 3 and img.shape[2] in (3, 4))
     return (img.shape[1], img.shape[0])
 
 def plt_show():
-    global fig_format
-    global fig_resolution
+    """ Shows the current image. Show means plt.show() if FIG_FORMAT
+    is not set, or save to requested format if set.
 
-    if not fig_format:
+    """
+
+    global FIG_FORMAT
+    global FIG_RESOLUTION
+
+    if not FIG_FORMAT:
         plt.show()
         return
     prefix, _ = os.path.splitext(sys.argv[0])
     kwargs = {}
-    if fig_resolution:
-        kwargs['dpi'] = int(fig_resolution)
+    if FIG_RESOLUTION:
+        kwargs['dpi'] = int(FIG_RESOLUTION)
 
-    kwargs['format'] = fig_format
-    name = "_%02d.%s" % ( len(plt.get_fignums()), fig_format)
-    plt.savefig( prefix + name , **kwargs)
-
-
-
+    kwargs['format'] = FIG_FORMAT
+    name = "_%02d.%s" % (len(plt.get_fignums()), FIG_FORMAT)
+    plt.savefig(prefix + name, **kwargs)
