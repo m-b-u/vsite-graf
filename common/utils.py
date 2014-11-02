@@ -41,6 +41,16 @@ def get_rgb_image(xres, yres):
     img = im_rgb.view(dtype=[('r', 'u1'), ('g', 'u1'), ('b', 'u1')]) [:, :, 0]
     return im_rgb, img
 
+def get_component_view(img):
+    dtype = img.dtype
+    return img.view(dtype=[('r', dtype), ('g', dtype), ('b', dtype)]) [:, :, 0]
+
+def is_rgb_image(image):
+    """ Returns true if the array represents RGB image"""
+    if image.ndim == 3 and image.shape[2] == 3:
+        return True
+    return False
+
 def putpixel(img, x, y, value):
     """ Sets the in image array to given value
 
