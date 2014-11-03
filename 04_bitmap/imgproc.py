@@ -119,9 +119,9 @@ def blur_gaussian(img):
 
 def sharpen(img):
     """ Kernel op: 3x3 Cross sharpen"""
-    kernel = np.array([[0., 1., 0.], 
-                      [1., -5., 1.],
-                      [0., 1., 0.]], dtype=np.float32)
+    kernel = np.array([[0., -1., 0.], 
+                      [-1., 5., -1.],
+                      [0., -1., 0.]], dtype=np.float32)
     kernel = normalize_kernel(kernel) 
     return apply_kernel(img, kernel)
 
