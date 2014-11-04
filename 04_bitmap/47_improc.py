@@ -45,6 +45,16 @@ class ImageHandlers(object):
         self.preview = imgproc.sharpen(self.image)
         self.update_display()
 
+    def do_unsharp(self, event):
+        """ Do simple unsharp - without masking"""
+        self.preview = imgproc.unsharp(self.image)
+        self.update_display()
+
+    def do_edges(self, event):
+        """ Do simple edge extraction"""
+        self.preview = imgproc.edge_hv(self.image)
+        self.update_display()
+
     def apply(self, event):
         """ Apply the current preview image as the new base image"""
         self.image = self.preview.copy()
@@ -95,11 +105,13 @@ class ImageDialog(ImageHandlers):
                    ('Blur uniform', self.do_blur),
                    ('Blur gaussian', self.do_blur_gaussian),
                    ('Sharpen', self.do_sharpen),
+                   ('Unsharp', self.do_unsharp),
+                   ('Edge detection', self.do_edges),
                    ('Apply', self.apply),
                    ('Reset', self.reset),
                    ('Save', self.save),
                    ('Quit', self.quit)]
-        padding = 0.01
+        padding = 0.02
         start, end = 0.1, 0.8
         hspace = (end - start) / len(buttons)
         for i, b in enumerate(buttons):

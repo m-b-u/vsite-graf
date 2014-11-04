@@ -37,7 +37,7 @@ def adjust_levels(img, in_levels, out_levels, gamma=1.0):
     buf = np.power ((buf - in_levels[0]) / (in_levels[1] - in_levels[0]),
                     1/gamma)
     # if gamma is not 1 input image should be converted to [0-1] float values
-    np.clip(buf, 0., 1., out=buf)
+
     get_image_minmax(buf)
     buf *= (out_levels[1]-out_levels[0])
     get_image_minmax(buf)
@@ -89,13 +89,16 @@ def normalize_kernel(kernel):
     if abs(sum_) > 1e-10:
         return kernel / sum_
 
-def apply_kernel(image, kernel):
+def apply_kernel(image, kernel, clip=True):
     """Apply the 2D convolution kernel to image"""
     img = image.copy()
 
     def conv(mat):
         """ Apply the kernel to 2D matrix"""
-        return scipy.signal.convolve2d(mat, kernel)
+        buf = scipy.signal.convolve2d(mat, kernel)
+        if clip:
+            np.clip(buf, 0., 1., out=buf)
+        return buf
 
     if is_rgb_image(img):
         im = get_component_view(img)
@@ -122,6 +125,12 @@ def sharpen(img):
     kernel = np.array([[0., -1., 0.], 
                       [-1., 5., -1.],
                       [0., -1., 0.]], dtype=np.float32)
+
+# alternative kernel
+#    kernel = np.array([[-1., -1., -1.], 
+#                      [-1., 9., -1.],
+#                      [-1., -1., -1.]], dtype=np.float32)
+
     kernel = normalize_kernel(kernel) 
     return apply_kernel(img, kernel)
 
