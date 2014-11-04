@@ -8,8 +8,15 @@ from bitmap import draw_bitmap, mask_from_bitmap
 from utils import get_image_size
 import numpy as np
 
-img = mpimg.imread("../samples/rocks.jpg")
-alien = (mpimg.imread("../samples/Space_invader_dn.png") * 255).astype(np.uint8)
+import os, inspect
+
+current_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+rocks_path = os.path.abspath(os.path.join(current_path, "../samples/rocks.jpg"))
+alien_path = os.path.abspath(os.path.join(current_path, "../samples/Space_invader_dn.png"))
+
+img = mpimg.imread(rocks_path)
+alien = (mpimg.imread(alien_path) * 255).astype(np.uint8)
 
 plt.ion()
 fig = plt.figure()
