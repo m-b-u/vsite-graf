@@ -33,6 +33,7 @@ def line_intersect_y(line, y):
     if y < line[0][1] or y > line[1][1]:    # are we completely out of interval
         return 0, False
     if y == line[0][1]:                     # two lines meet at endpoints,
+        # TODO: Watch out when lines are not flipped (not line[0] anymore)
         return 0, False                     # consider only one that ends here,
                                             #not one that starts
     dx = line[1][0] - line[0][0]
@@ -118,7 +119,7 @@ def draw_convex_polygon(img, points, val):
     active_edge = []
     edge_idx = 0 # edges up to here were processed
     # from the smallest  to largest y found in any edge
-    for y in xrange(edge[0][0][1], edge[-1][1][1]+1):
+    for y in xrange(edge[0][0][1], edge[-1][1][1]+1):      # TODO: watch out if you remove sorting of edges!!
         edge_idx = add_entering_edges(active_edge, edge, edge_idx, y)
         intersections = get_intersection_points(active_edge, y)
         for i, pt in enumerate(intersections):
