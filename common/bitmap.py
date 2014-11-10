@@ -34,9 +34,12 @@ def draw_bitmap_2(img, x, y, bitmap, mask=None):
             img[y:y+h, x:x+w] &= ~mask[:, :, np.newaxis]
         elif img.ndim == 2:
             img[y:y+h, x:x+w] &= ~mask
-
-    img[y:y+h, x:x+w] |= bitmap
-
+        img[y:y+h, x:x+w] |= bitmap
+    else:
+        img[y:y+h, x:x+w] = bitmap
+        # Try: To see "unexpected" effects of bitwise logical operations
+        # on 8-bit RGB images - comment out the line above, and comment one below
+        # img[y:y+h, x:x+w] |= bitmap
 
 def mask_from_bitmap(img):
     """ Derive mask for blitting image img. Mask has value 255

@@ -22,6 +22,8 @@ mask2 = mask_from_bitmap(alien2)
 
 alien = [alien, alien2]
 mask = [mask, mask2]
+# comment out to test animation without masks
+# mask = [None, None]
 
 
 def draw_fleet(fb, x, y, rows, columns, padding, alien, mask, img_idx):
