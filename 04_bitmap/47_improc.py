@@ -6,6 +6,9 @@ import sys
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import numpy as np
+
+from utils import get_component_view
 
 from matplotlib.widgets import Button
 
@@ -83,6 +86,7 @@ class ImageDialog(ImageHandlers):
         self.fig = None
         self.image_view = []
         self.filename = None
+        self.axishist = []
 
     def load_file(self, filename):
         """ Load specified file into image buffers"""
@@ -96,8 +100,25 @@ class ImageDialog(ImageHandlers):
         self.image_view = [a.imshow(self.image, aspect=1) for a in axis]
         axis[0].set_title('Image')
         axis[1].set_title('Preview')
+
+        self.setup_histogram(axis[0], self.image)
+        self.setup_histogram(axis[1], self.preview)
+
         return self.fig, axis, self.image_view
 
+
+    def setup_histogram(self, axis, data):
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        divider = make_axes_locatable(axis)
+
+        ax2 = divider.new_horizontal(size="30%", pad=0.05)
+        #ax2.patch.set_facecolor('black')
+        # or ax2.set_axis_bgcolor('black')
+        fig1 = axis.get_figure()
+        fig1.add_axes(ax2)
+        self.axishist.append(ax2)
+        self.update_histogram()
+        
     def setup_controls(self):
         """ Set up button axes"""
         buttons = [('Auto levels', self.do_autolevels),
@@ -117,8 +138,9 @@ class ImageDialog(ImageHandlers):
         for i, b in enumerate(buttons):
             axis = self.fig.add_axes([start + i*hspace, 0.03,
                                       start + (i+1)*hspace - padding, 0.03])
-            self.axes.append(axis)
             button = Button(axis, b[0])
+            self.axes.append(axis)
+
             button.on_clicked(b[1])
             self.buttons.append(button)
 
@@ -126,11 +148,24 @@ class ImageDialog(ImageHandlers):
         """ Start the dialog """
         plt.show()
 
+    def update_histogram(self):
+        for ax, im in zip(self.axishist, [self.image, self.preview]):
+            im_ = get_component_view(im)
+            max_ = None 
+            for comp in ('r', 'g', 'b'):
+                n, bin, patches = ax.hist (im_[comp].ravel(), bins=256, histtype='stepfilled', color=comp, edgecolor='none', alpha=1 if comp=='r' else 0.8)
+                #min_ = np.min(n[1:-1])
+                max_ = max(max_, np.max(n[1:-1]))
+                for tl in ax.get_yticklabels():
+                    tl.set_visible(False)
+            ax.set_ylim(top=max_)
+
     def update_display(self):
         """ Update images after some operation """
         self.image_view[0].set_data(self.image)
         self.image_view[1].set_data(self.preview)
         self.fig.canvas.draw_idle()
+        self.update_histogram()
 
 dlg = ImageDialog()
 dlg.load_file(filename)
