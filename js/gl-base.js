@@ -15,7 +15,7 @@ function getShader(nodeId, typeStr) {
     var shaderNode = document.getElementById(nodeId);
     var shaderSource = getShaderSource(shaderNode);
 
-    var shader = gl.createShader(typeStr)
+    var shader = gl.createShader(typeStr);
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
 
@@ -31,8 +31,8 @@ function initGL() {
     var canvas = document.getElementById("canvas1");
     try {
 	gl = canvas.getContext("experimental-webgl");
-	gl.viewportWidth = canvas.width;
-	gl.viewportHeight = canvas.height;
+	gl.viewportWidth = canvas.clientWidth;
+	gl.viewportHeight = canvas.clientHeight;
     } catch (e) {
     }
     if (!gl) {

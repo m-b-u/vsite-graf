@@ -1,0 +1,315 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" type="text/css" href="1.css">
+
+<script src="../js/gl-base.js" type="text/javascript" charset="utf-8"/>
+
+<script id="dummy"></script>
+
+<script id="shader-vert" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vertexColor;
+    uniform vec2 translation;
+    //varying vec4 vColor;
+    void main() {
+	gl_Position = vPosition + vec4(translation, 0., 0.);
+	//vColor = vertexColor;
+    }
+</script>
+
+<script id="shader-frag" type="x-shader/x-fragment">
+    precision mediump float;
+    //§varying vec4 vColor;
+    void main(void) {
+	//gl_FragColor = vColor;
+	gl_FragColor = vec4(0.50, 0.50, 0.57, 1);
+    } 
+</script>
+
+<script id="shader-vert-sky" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    void main() {
+	gl_Position = vPosition;
+    }
+</script>
+
+
+<script id="shader-frag-sky" type="x-shader/x-fragment">
+    #ifdef GL_ES
+    precision mediump float;
+    #endif
+    uniform vec4 skyColor[5];
+    uniform vec2 resolution;
+    void main(void) {
+	vec2 position = gl_FragCoord.xy;
+        float lambda = 2.0 -  2.0*position.y/resolution.y;
+	gl_FragColor = vec4 (mix(skyColor[0].rgb, skyColor[1].rgb, lambda), 1.0);
+    } 
+</script>
+
+<script type="text/javascript">
+
+var shaderProgram = null;
+var programSky = null;
+
+
+function doResize() {
+
+
+    if (gl !== undefined) {
+
+	setViewportSize();
+	drawScene();
+    }
+}
+
+function setViewportSize() {
+    var canvas = document.getElementById("canvas1");
+    console.log("Setting viewport");
+    console.log("Resize canvas size: " + canvas.width + ", " + canvas.height + " clientsize: " + canvas.clientWidth + ", " + canvas.clientHeight);
+    var w = canvas.clientWidth;
+    var h = canvas.clientHeight;
+    if (canvas.width != w)
+	canvas.width = w;
+    if (canvas.height != h)
+	canvas.height = h;
+
+    console.log("Resize buffer size: " + gl.drawingBufferWidth + ", " + gl.drawingBufferHeight);
+
+
+}
+
+
+function initShaders() {
+
+    var fragmentShader = getShader("shader-frag", gl.FRAGMENT_SHADER);
+    var vertexShader =   getShader("shader-vert", gl.VERTEX_SHADER);
+
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+
+    gl.linkProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vPosition");
+    // We will enable vertex attrib array later, when we actually want to use it
+    // gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    // bindAttribLocation is alternative to getting the allocated location
+    // gl.bindAttribLocation(shaderProgram, 0, "vPosition"); 
+
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "vertexColor");
+    shaderProgram.translationUniform = gl.getUniformLocation(shaderProgram, "translation");
+
+    gl.useProgram(shaderProgram);
+
+    // New program: Pair of vertex/fragment shaders for sky
+    programSky = gl.createProgram();
+    var vertexShader = getShader("shader-vert-sky", gl.VERTEX_SHADER);
+    var shaderSky = getShader("shader-frag-sky", gl.FRAGMENT_SHADER);
+
+    gl.attachShader(programSky, vertexShader);
+    gl.attachShader(programSky, shaderSky);
+
+    gl.linkProgram(programSky);
+    gl.useProgram(programSky);
+    programSky.skyColorUniform = gl.getUniformLocation(programSky, "skyColor");
+    programSky.resolutionUniform = gl.getUniformLocation(programSky, "resolution");
+    programSky.vertexPositionAttribute = gl.getAttribLocation(programSky, "vPosition");
+    
+}
+</script>
+
+<script type="text/javascript">
+var nVerts = 10000;
+var numPeaks = 100;
+var vertexBuffer = null;
+var elemBuffer = null;
+var colorBuffer = null;
+
+function loadScene() {
+    // Pair of triangles for background rectangle
+
+    var vertices = [ -1.0, 0.0, 0.0,
+		     1.0, 0.0, 0.0,
+		     // Horizon can start on higher position, now that we have some§ mountains
+		     1.0, 1.0, 0.0,
+		     -1.0, 1.0, 0.0];
+
+    var elements = [ 0, 1, 2, 2, 3, 0];
+    // Define indirect vertex indices for drawElements
+
+    // Few triangles for mountains, extend them left and right off -1, 1 scene interval
+    // to allow for movement
+
+    var i;
+    var x = -8.0;
+    var y = 0.3;
+    var xspan = 16.0;
+    var last;
+    for (i=0; i < numPeaks; i++) {
+	vertices.push (x, y, -0.1);
+	vertices.push (x, -1, -0.1);
+
+	last = vertices.length/3 - 2;
+
+	var deltax = xspan/numPeaks;
+	deltax *= (1 + Math.random()*0.3 - 0.15); 
+	x += deltax;
+	y = 0.3 + ( Math.random() * 0.4 - 0.2);
+	elements.push (last, last+1, last+2, last+2, last+3, last+1);
+    }
+    vertices.push (1.0, y, -0.1);
+    vertices.push (1.0, -1, -0.1);
+    //for (i=12; i<vertices.length; i+=3) {
+    //console.log("X=" + vertices[i]);
+    //}
+    //console.log("Scene generated, vertices: " + vertices.length/3 + " lastrefd: " + (last + 3) + " elems: " + elements.length);
+    //for (i=0; i<elements.length; ++i) {
+    //console.log("> " + elements[i++] + ", " + elements[i++] + ", " + elements[i]);
+    //}
+
+    //elements.push (last, last+1, last+2, last+2, last+3, last+1);
+
+    vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); 
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    elemBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer); 
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(elements), gl.STATIC_DRAW);
+
+    gl.useProgram(programSky);
+    var skyColors = [ 0.375, 0.55, 0.83, 0.,
+                      0.93, 0.91, 0.92, 0.85,
+                      0.89, 0.82, 0.83, 1.0,  // now mountain
+		      0.3, 0.3, 0.6, 0.,
+		      0.7, 0.7, 1.0, 0.75];
+    gl.uniform4fv(programSky.skyColorUniform, skyColors);
+
+    //colorBuffer = gl.createBuffer();
+    //gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);    
+    //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    setViewportSize();
+
+}
+
+var frame = 0;
+var velocity = 0.;
+var maxSpeed = 30.;
+var position = 0.;
+var timestep = 0.02;
+
+function updateScene() {
+    if (Math.abs(velocity) > 1e-03) {
+	position += velocity * timestep;
+	velocity *= 0.97;
+    } else {
+	velocity = 0.;
+    }
+    frame++;
+    return Math.abs(velocity) > 1e-03; // do we need to update scene?
+}
+
+function drawScene() { 
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    
+    gl.useProgram(programSky);
+    gl.uniform2f(programSky.resolutionUniform, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.enableVertexAttribArray(programSky.vertexPositionAttribute);
+    gl.vertexAttribPointer(programSky.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer);
+
+    //    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+    //    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 4 /* item size */, gl.FLOAT, false, 0, 0);
+    //    console.log("Verts: " + start + ", len: " + len);
+
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+
+    // Draw mountains
+    gl.useProgram(shaderProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
+    gl.uniform2f(shaderProgram.translationUniform, -position/50.0, 0.);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer);
+
+    // Skip first two triangles
+    gl.drawElements(gl.TRIANGLES, numPeaks*6, gl.UNSIGNED_SHORT, 6*2 /* sizeof uint16 */);
+
+    gl.flush();
+}
+
+var sceneTimer = null;
+
+function doKeyPress(event) {
+
+    var chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+    console.log("Key pressed: " + chCode);
+    var triggered = false;
+    if (chCode == 'a'.charCodeAt(0) || chCode == 37) {
+	triggered = true;
+	velocity -= maxSpeed/10.;
+	if (velocity < -maxSpeed)
+	    velocity = -maxSpeed;
+    } else if (chCode =='d'.charCodeAt(0) || chCode == 39) {
+	triggered = true;
+ 	velocity += maxSpeed/10.;
+	if (velocity > maxSpeed)
+	    velocity = maxSpeed;
+    }
+    if (triggered) {
+	console.log("Key triggered");
+    }
+    if (triggered && !sceneTimer) {
+	startAnimation();
+    }
+}
+
+
+function animate() {
+    if (! (frame % 30)) {
+	console.log("Frame, speed=" + velocity + " position: " + position);
+    }
+    var cont = updateScene();
+    drawScene();
+    if (!cont) {
+	clearInterval(sceneTimer);
+	sceneTimer = null;
+	console.log("Animation stopped");
+    }
+}
+
+function startAnimation() {
+    sceneTimer = setInterval(animate, 20);
+    console.log("Animation started");
+}
+
+function startGL() {
+    initGL();
+    window.addEventListener('resize', doResize);
+    //var canvas = document.getElementById("canvas1");
+    window.addEventListener('keypress', doKeyPress);
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+    initShaders();
+
+    loadScene();
+
+    drawScene();
+    startAnimation();
+}
+</script>
+</head>
+<body onload="startGL();">
+  <canvas class="scene" id="canvas1" onclick="drawScene();"></canvas>
+    
+</body>
+</html>
