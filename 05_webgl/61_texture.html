@@ -32,9 +32,7 @@
 
     uniform sampler2D sampler;
     void main(void) {
-	vec4 dummy = texture2D(sampler, vTexCoord);
-	gl_FragColor = vec4 (0.2,0.5,0.5,1.) + dummy;
-    // also try to skip alpha from texture here
+	gl_FragColor = texture2D(sampler, vTexCoord);
     } 
 </script>
 
