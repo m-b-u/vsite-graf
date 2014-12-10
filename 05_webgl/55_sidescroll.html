@@ -95,8 +95,7 @@ function initShaders() {
     gl.linkProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vPosition");
-    // We will enable vertex attrib array later, when we actually want to use it
-    // gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     // bindAttribLocation is alternative to getting the allocated location
     // gl.bindAttribLocation(shaderProgram, 0, "vPosition"); 
 
@@ -189,9 +188,6 @@ function loadScene() {
 		      0.7, 0.7, 1.0, 0.75];
     gl.uniform4fv(programSky.skyColorUniform, skyColors);
 
-    //colorBuffer = gl.createBuffer();
-    //gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);    
-    //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     setViewportSize();
 
 }
@@ -221,25 +217,17 @@ function drawScene() {
     gl.uniform2f(programSky.resolutionUniform, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.enableVertexAttribArray(programSky.vertexPositionAttribute);
+
     gl.vertexAttribPointer(programSky.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer);
-
-    //    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    //    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 4 /* item size */, gl.FLOAT, false, 0, 0);
-    //    console.log("Verts: " + start + ", len: " + len);
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 
     // Draw mountains
     gl.useProgram(shaderProgram);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
     gl.uniform2f(shaderProgram.translationUniform, -position/50.0, 0.);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer);
-
+    
     // Skip first two triangles
     gl.drawElements(gl.TRIANGLES, numPeaks*6, gl.UNSIGNED_SHORT, 6*2 /* sizeof uint16 */);
 
