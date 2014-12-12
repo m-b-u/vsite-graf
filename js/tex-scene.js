@@ -43,7 +43,7 @@ function loadScene()
     scene.buffer = {};
     scene.texture = {};
     scene.frame = 0;
-
+/*
     var vertices = new Float32Array(gridSize*gridSize*2);
     var texCoords = new Float32Array(gridSize*gridSize*2);
     var elements = new Uint16Array(gridSize*gridSize*6); // two triangles per subdivided quad
@@ -99,7 +99,7 @@ function loadScene()
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); //gl.DYNAMIC_DRAW);   // We expect to change vertex coordinates per draw
     scene.buffer['vertex'] = vertexBuffer;
-    
+    gl.enableVertexAttribArray(scene.shader['default'].vertexPositionAttribute);
     gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0); 
 
     var elemBuffer = gl.createBuffer();
@@ -111,11 +111,12 @@ function loadScene()
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
     scene.buffer['tCoord'] = texCoordBuffer;
-
-    
-    scene.transform = mat3.identity(mat3.create());
+    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, 2, gl.FLOAT, false, 0, 0); 
+    gl.enableVertexAttribArray(scene.shader['default'].texturePositionAttribute);
+*/    
+    var identity = [1., 0., 0., 0., 1., 0., 0., 0., 1.];
     //gl.useProgram(scene.shader['default']);
-
+    gl.uniformMatrix3fv(scene.shader['default'].transformUniform, false, identity);
 
 
     scene.texture['default'] = ImageTexture('../samples/helix_blancoHubble_1080.jpg');
@@ -123,13 +124,41 @@ function loadScene()
 
 
 
-//    makeMinimalScene();
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    makeMinimalScene();
+
     setViewportSize();
 }
 
 
+function makeMinimalScene() 
+{
 
+    var coordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, coordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+	-0.8,  -0.8,
+	0.8,  -0.8,
+	-0.8,  0.8,
+	-0.8,  0.8,
+	0.8,  -0.8,
+	0.8,  0.8]), gl.STATIC_DRAW);
+
+    scene.buffer['vCoord0'] = coordBuffer;
+
+    var texCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+	0.0,  0.0,
+	1.0,  0.0,
+	0.0,  1.0,
+	0.0,  1.0,
+	1.0,  0.0,
+	1.0,  1.0]), gl.STATIC_DRAW);
+    
+    scene.buffer['tCoord0'] = texCoordBuffer;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}
 
 
 function drawScene()
@@ -140,24 +169,27 @@ function drawScene()
     // always active gl.useProgram(scene.shader['default']);
     // gl.useProgram(scene.shader['default']);
 
-    gl.uniformMatrix3fv(scene.shader['default'].transformUniform, gl.FALSE, scene.transform);
-
     // maybe also activate it only once
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, scene.texture['default']);
     gl.uniform1i(scene.shader['default'].samplerUniform, 0);
 
+    /* // forget these
     // draw something
     gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vertex']);
     gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0); 
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.buffer['element']);
-  
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['tCoord'])
-    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, 2, gl.FLOAT, false, 0, 0);     
+    */ // forget these. Make two trias.
+    var vCoordLocation = gl.getAttribLocation(scene.shader['default'], "aVertPosition");
+        gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vCoord0']);
+    gl.vertexAttribPointer(vCoordLocation, 2, gl.FLOAT, false, 0, 0); 
+    
+    var tCoordLocation = gl.getAttribLocation(scene.shader['default'], "aTexPosition");
+    gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['tCoord0']);
+    gl.vertexAttribPointer(tCoordLocation, 2, gl.FLOAT, false, 0, 0);    
 
-  
-    gl.drawElements(gl.TRIANGLES, scene.element['triangles'].numElements, gl.UNSIGNED_SHORT, scene.element['triangles'].offsetElements);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    //gl.drawElements(gl.TRIANGLES, scene.element['triangles'].numElements, gl.UNSIGNED_SHORT, scene.element['triangles'].offsetElements);
 
     gl.flush();
 }
@@ -174,14 +206,14 @@ function doResize() {
 function setViewportSize() {
     var canvas = document.getElementById("canvas1");
     console.log("Setting viewport");
-
+    console.log("Resize canvas size: " + canvas.width + ", " + canvas.height + " clientsize: " + canvas.clientWidth + ", " + canvas.clientHeight);
     var w = canvas.clientWidth;
     var h = canvas.clientHeight;
     if (canvas.width != w)
 	canvas.width = w;
     if (canvas.height != h)
 	canvas.height = h;
-    console.log("Resize canvas size: " + canvas.width + ", " + canvas.height + " clientsize: " + canvas.clientWidth + ", " + canvas.clientHeight);
+
     console.log("Resize buffer size: " + gl.drawingBufferWidth + ", " + gl.drawingBufferHeight);
 }
 
@@ -218,11 +250,6 @@ function doKeyPress(event) {
 
 function updateScene() {
     scene.frame++;
-    if (scene.nextVelFrame === undefined || scene.frame > scene.nextVelFrame) {
-	scene.nextVelFrame = scene.frame + Math.random()*200 - 50;
-	scene.velocity = vec2.fromValues(Math.random()*0.01 - 0.005, Math.random()*0.01 - 0.005);
-    }
-    mat3.translate(scene.transform, scene.transform, scene.velocity);
     // return scene.update()
     return true; 
 }
