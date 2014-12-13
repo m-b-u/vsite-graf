@@ -66,6 +66,8 @@ function startGL() {
 
 
     canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseup', doMouseUp);
+    canvas.addEventListener('mousedown', doMouseDown);
 
 
     gl.clearColor(0.0, 0.0, 0.5, 1.0);

@@ -1,4 +1,26 @@
 var scene = function () {};
+var state = function () {};
+
+state.G = {
+    start: 0.2,
+    end: 0.6,
+    current: 0.2,
+    blow: -10.0,
+    state: 'none',
+    update: function() {
+	if (this.state == 'none') {
+	    this.current += (this.start - this.current) * 0.02;
+	} else if (this.state == 'charge') {
+	    if (this.current < this.end) {
+		this.current += (this.end - this.current) * 0.1;
+	    }
+	} else if (this.state == 'blow') {
+	    this.current = this.blow;
+	    this.state = 'none'
+	}
+	return this.current;
+    }
+};
 
 
 // General workflow with attributes.
@@ -191,7 +213,7 @@ function drawScene()
 
 	var vertices = scene.element['triangles'].vertices;
 	gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vertex']);
-	var gravMutator = makeGravMutator(touch_pos[0], touch_pos[1], 0.2);
+	var gravMutator = makeGravMutator(touch_pos[0], touch_pos[1], state.G.current);
 	var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0, gravMutator);
 	//var subArr = vertices.subarray(numVertices*2);  // how many items we want to replace
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices); //subArr);   // here we replace basically all of them.
@@ -279,6 +301,13 @@ function doMouseMove(evt) {
     scene.cursorPos = vec2.fromValues (evt.x/canvas.width*2.0 - 1.0, 1.0 - evt.y/canvas.height*2.0);
 } 
 
+function doMouseDown(evt) {
+    state.mouseDown = true;
+    state.G.state = 'charge';
+}
+function doMouseUp(evt) {
+    state.G.state = 'blow';
+}
 
 function updateScene() {
     scene.frame++;
@@ -287,6 +316,8 @@ function updateScene() {
 	scene.velocity = vec2.fromValues(Math.random()*0.01 - 0.005, Math.random()*0.01 - 0.005);
     }
     mat3.translate(scene.transform, scene.transform, scene.velocity);
+
+    state.G.update();
     // return scene.update()
     return true; 
 }
