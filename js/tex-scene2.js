@@ -100,7 +100,7 @@ function loadScene()
 
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); //gl.DYNAMIC_DRAW);   // We expect to change vertex coordinates per draw
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);   // We expect to change vertex coordinates per draw
     scene.buffer['vertex'] = vertexBuffer;
     
     gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0); 
@@ -132,7 +132,10 @@ function loadScene()
 }
 
 
-
+function deviceToFrameCoord(device_pos)
+{
+    return vec2.fromValues( (device_pos[0] + 1.)/2. * gl.drawingBufferWidth, (device_pos[1] + 1.)/2. * gl.drawingBufferHeight);
+}
 
 
 function drawScene()
@@ -147,11 +150,12 @@ function drawScene()
 
     var inverse_trans = mat3.invert(mat3.create(),scene.transform);
     if (scene.cursorPos !== undefined) {
-	var device_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
+	var touch_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
+	var device_pos =  vec2.transformMat3(vec2.create(), scene.cursorPos, scene.transform);
 	var canvas = document.getElementById("canvas1");
 	var w = canvas.clientWidth;
 	var h = canvas.clientHeight;
-	var frame_pos = vec2.fromValues( (device_pos[0] + 1.)/2. * gl.drawingBufferWidth, (device_pos[1] + 1.)/2. * gl.drawingBufferHeight);
+	var frame_pos = deviceToFrameCoord(scene.cursorPos); // retransform relative canvas pos back to framebuffer (almost the same)
 //	gl.uniform2f(scene.shader['default'].cursorUniform, device_pos[0], device_pos[1]);
 	gl.uniform2f(scene.shader['default'].cursorUniform, frame_pos[0], frame_pos[1]);
 	console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
