@@ -23,7 +23,7 @@ a
     varying vec2 vTexCoord;
     void main() {
         gl_Position = vec4((uTransform * vec3(aVertPosition.xy, 1.)).xy, -1, 1.);
-    //gl_Position = vec4(aVertPosition, -1., 1.);
+        //gl_Position = vec4(aVertPosition, -1., 1.);
         vTexCoord = aTexPosition;
     }
 </script>
@@ -33,17 +33,19 @@ a
     varying vec2 vTexCoord;
 
     uniform sampler2D sampler;
+    uniform vec2 cursorCoord;
     void main(void) {
-	gl_FragColor = texture2D(sampler, vTexCoord);
+        vec4 color = texture2D(sampler, vTexCoord);
+        float dist = length(gl_FragCoord.xy - cursorCoord);
+        if (dist < 10.) {
+	    color = vec4 (1., 1., 1., 1.);
+	}
+	gl_FragColor = color;
     } 
 </script>
 
-<script src="../js/external/glMatrix-2.2.1/gl-matrix.js" type="text/javascript" charset="utf-8">
-a
-</script>
-<script src="../js/tex-scene2.js" type="text/javascript" charset="utf-8">
-b
-</script>
+<script src="../js/external/glMatrix-2.2.1/gl-matrix.js" type="text/javascript" charset="utf-8">a</script>
+<script src="../js/tex-scene2.js" type="text/javascript" charset="utf-8">b</script>
 
 <script id="dummy"></script>
 
@@ -51,8 +53,21 @@ b
 function startGL() {
     initGL();
     window.addEventListener('resize', doResize);
-    //var canvas = document.getElementById("canvas1");
+    var canvas = document.getElementById("canvas1");
     window.addEventListener('keypress', doKeyPress);
+
+    function onMouseMove(evt) {
+        var rect = canvas.getBoundingClientRect();
+        doMouseMove ( {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        });
+    }
+
+
+
+    canvas.addEventListener('mousemove', onMouseMove);
+
 
     gl.clearColor(0.0, 0.0, 0.5, 1.0);
     gl.enable(gl.DEPTH_TEST);

@@ -27,6 +27,7 @@ function initShaders() {
 
     program.transformUniform = gl.getUniformLocation(program, "uTransform");
     program.samplerUniform = gl.getUniformLocation(program, "sampler");
+    program.cursorUniform = gl.getUniformLocation(program, "cursorCoord");
 
     // it's the only one for now so we can use it immediately
     gl.useProgram(program);
@@ -51,12 +52,14 @@ function loadScene()
     var i,j;
 
     // We will probably split this later into own function 
+    var left = -1.5;
+    var width = 3.0;
     for (i=0; i<=gridSize; ++i) {
 	for (j=0; j<=gridSize; ++j) {
 	    // Set up vertex coordinates [-1, 1] x [-1, 1]
 	    var pos = 2* (i*gridSize + j);                // 2 elements per vertex
-	    vertices[pos] = -1. + 2*(j/(gridSize-1.0));   // x coord
-	    vertices[pos+1] = -1. + 2*(i/(gridSize-1.0)); // y coord
+	    vertices[pos] = left + width*(j/(gridSize-1.0));   // x coord
+	    vertices[pos+1] = left + width*(i/(gridSize-1.0)); // y coord
 	}
     }
 
@@ -142,6 +145,18 @@ function drawScene()
 
     gl.uniformMatrix3fv(scene.shader['default'].transformUniform, gl.FALSE, scene.transform);
 
+    var inverse_trans = mat3.invert(mat3.create(),scene.transform);
+    if (scene.cursorPos !== undefined) {
+	var device_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
+	var canvas = document.getElementById("canvas1");
+	var w = canvas.clientWidth;
+	var h = canvas.clientHeight;
+	var frame_pos = vec2.fromValues( (device_pos[0] + 1.)/2. * gl.drawingBufferWidth, (device_pos[1] + 1.)/2. * gl.drawingBufferHeight);
+//	gl.uniform2f(scene.shader['default'].cursorUniform, device_pos[0], device_pos[1]);
+	gl.uniform2f(scene.shader['default'].cursorUniform, frame_pos[0], frame_pos[1]);
+	console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
+    }
+    
     // maybe also activate it only once
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, scene.texture['default']);
@@ -214,6 +229,12 @@ function doKeyPress(event) {
 	startAnimation();
     }
 }
+
+function doMouseMove(evt) {
+    var canvas = document.getElementById("canvas1");
+    console.log("Mouse move: " + evt.x + ", " + evt.y);
+    scene.cursorPos = vec2.fromValues (evt.x/canvas.width*2.0 - 1.0, 1.0 - evt.y/canvas.height*2.0);
+} 
 
 
 function updateScene() {
