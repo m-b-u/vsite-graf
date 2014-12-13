@@ -42,26 +42,6 @@ function initGL() {
 
 }
 
-
-/*
-function SceneObject(dataArray)
-{
-
-}
-
-function ElementsObj(dataArray, elementArray)
-{
-    this.dataArray = dataArray;
-    this.elementArray = elementArray;
-    this.buffer = null;
-}
-
-ElementsObj.prototype = new SceneObject();
-ElementsObj.prototype.insertData = function () {
-    // append stuff to dataarray and elementarray
-    // maybe take the callback and just record start and end indices here
-}
-*/
 function isPOT(num) 
 {
     return (num & (num - 1)) == 0;

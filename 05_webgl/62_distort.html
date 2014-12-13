@@ -6,9 +6,7 @@
 
 <link rel="stylesheet" type="text/css" href="1.css">
 
-<script src="../js/gl-base.js" type="text/javascript" charset="utf-8">
-a
-</script>
+
 
 <!--<script id="dummy-dont-get-eaten">
     Text to be ignored;
@@ -37,14 +35,15 @@ a
     void main(void) {
         vec4 color = texture2D(sampler, vTexCoord);
         float dist = length(gl_FragCoord.xy - cursorCoord);
-        if (dist < 10.) {
-	    color = vec4 (1., 1., 1., 1.);
+        if (dist <= 12.) {
+            color = vec4 (smoothstep(7., 15., dist) * vec4 (1., 1., 1., -1.)) + vec4 (0., 0., 0., 1.) ; // ok, but res from canvas shines through
 	}
 	gl_FragColor = color;
     } 
 </script>
 
 <script src="../js/external/glMatrix-2.2.1/gl-matrix.js" type="text/javascript" charset="utf-8">a</script>
+<script src="../js/gl-base.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/tex-scene2.js" type="text/javascript" charset="utf-8">b</script>
 
 <script id="dummy"></script>
