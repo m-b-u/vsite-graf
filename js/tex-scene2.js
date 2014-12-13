@@ -6,7 +6,11 @@ state.G = {
     end: 0.6,
     current: 0.2,
     blow: -10.0,
+    blown: 0,
     state: 'none',
+    charged: function() {
+	return this.current > 0.85 * this.end;
+    },
     update: function() {
 	if (this.state == 'none') {
 	    this.current += (this.start - this.current) * 0.02;
@@ -297,7 +301,7 @@ function doKeyPress(event) {
 
 function doMouseMove(evt) {
     var canvas = document.getElementById("canvas1");
-    console.log("Mouse move: " + evt.x + ", " + evt.y);
+    //console.log("Mouse move: " + evt.x + ", " + evt.y);
     scene.cursorPos = vec2.fromValues (evt.x/canvas.width*2.0 - 1.0, 1.0 - evt.y/canvas.height*2.0);
 } 
 
@@ -306,7 +310,12 @@ function doMouseDown(evt) {
     state.G.state = 'charge';
 }
 function doMouseUp(evt) {
-    state.G.state = 'blow';
+    if (state.G.charged()) {
+	state.G.state = 'blow';
+	state.G.blown += 1;
+    } else {
+	state.G.state = 'none';
+    }
 }
 
 function updateScene() {
