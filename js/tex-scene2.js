@@ -35,6 +35,40 @@ function initShaders() {
     gl.enableVertexAttribArray(program.texturePositionAttribute);
 }
 
+function makeGravMutator(x0,y0,G)
+{
+    return function (x,y) {
+	var dir = vec2.normalize(vec2.create(), vec2.fromValues(x-x0,y-y0))
+	var pow = G/vec2.squaredLength(dir);
+	//console.log("Created mutator: Pow: " + pow + " G: " + G + " direction: " + dir);
+	return {x: x - dir[0]*pow, y:y - dir[1]*pow};
+    };
+}
+
+function makeGrid(vertices, startPos, gridSize, left, width, mutator)
+{
+    var numPoints = 0;
+    for (i=0; i<=gridSize; ++i) {
+	for (j=0; j<=gridSize; ++j) {
+	    // Set up vertex coordinates [-1, 1] x [-1, 1]
+	    var pos = startPos + 2* (i*gridSize + j);                // 2 elements per vertex
+	    var x = left + width*(j/(gridSize-1.0));   // x coord
+	    var y = left + width*(i/(gridSize-1.0)); // y coord
+	    if (mutator!== undefined) {
+		var pt = mutator(x,y);
+		//console.log("Mutated amount: " + (x-pt.x) + ", " + (y-pt.y));
+		x = pt.x;
+		y = pt.y;
+	    }
+	    vertices[pos] = x;
+	    vertices[pos+1] = y;
+
+	    numPoints++;
+	}
+    }
+    return numPoints;
+}
+
 
 var gridSize = 20;
 function loadScene()
@@ -45,24 +79,18 @@ function loadScene()
     scene.texture = {};
     scene.frame = 0;
 
+    scene.element['triangles'] = function() {};
+
     var vertices = new Float32Array(gridSize*gridSize*2);
+    scene.element['triangles'].vertices = vertices;
+    
     var texCoords = new Float32Array(gridSize*gridSize*2);
     var elements = new Uint16Array(gridSize*gridSize*6); // two triangles per subdivided quad
     var posElem = 0;
     var i,j;
 
-    // We will probably split this later into own function 
-    var left = -1.5;
-    var width = 3.0;
-    for (i=0; i<=gridSize; ++i) {
-	for (j=0; j<=gridSize; ++j) {
-	    // Set up vertex coordinates [-1, 1] x [-1, 1]
-	    var pos = 2* (i*gridSize + j);                // 2 elements per vertex
-	    vertices[pos] = left + width*(j/(gridSize-1.0));   // x coord
-	    vertices[pos+1] = left + width*(i/(gridSize-1.0)); // y coord
-	}
-    }
 
+    var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0);
     for (i=0; i<=gridSize; ++i) {
 	for (j=0; j<=gridSize; ++j) {
 	    // Set up vertex coordinates [-1, 1] x [-1, 1]
@@ -90,9 +118,10 @@ function loadScene()
     }
 
 
-    scene.element['triangles'] = function() {};
+
     //scene.element['triangles'].numElements = gridSize * gridSize * 6;
     scene.element['triangles'].numElements = posElem;
+    scene.element['triangles'].numVertices = numVertices;
     scene.element['triangles'].offsetElements = 0;
 
     // Now create buffers for those arrays
@@ -158,7 +187,17 @@ function drawScene()
 	var frame_pos = deviceToFrameCoord(scene.cursorPos); // retransform relative canvas pos back to framebuffer (almost the same)
 //	gl.uniform2f(scene.shader['default'].cursorUniform, device_pos[0], device_pos[1]);
 	gl.uniform2f(scene.shader['default'].cursorUniform, frame_pos[0], frame_pos[1]);
-	console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
+	//console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
+
+	var vertices = scene.element['triangles'].vertices;
+	gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vertex']);
+	var gravMutator = makeGravMutator(touch_pos[0], touch_pos[1], 0.2);
+	var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0, gravMutator);
+	//var subArr = vertices.subarray(numVertices*2);  // how many items we want to replace
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices); //subArr);   // here we replace basically all of them.
+	// we are generating more vertices than we should?
+
+
     }
     
     // maybe also activate it only once
