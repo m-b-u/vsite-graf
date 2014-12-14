@@ -37,6 +37,7 @@ function initShaders() {
 
     var fragmentShader = getShader("shader-frag", gl.FRAGMENT_SHADER);
     var vertexShader =   getShader("shader-vert", gl.VERTEX_SHADER);
+    var vertex3DShader = getShader("shader-vert-3d", gl.VERTEX_SHADER);
 
     scene.shader = {};
 
@@ -48,14 +49,28 @@ function initShaders() {
     gl.linkProgram(program);
 
     program.vertexPositionAttribute = gl.getAttribLocation(program, "aVertPosition");
-
     program.texturePositionAttribute = gl.getAttribLocation(program, "aTexPosition");
 
     program.transformUniform = gl.getUniformLocation(program, "uTransform");
     program.samplerUniform = gl.getUniformLocation(program, "sampler");
     program.cursorUniform = gl.getUniformLocation(program, "cursorCoord");
 
-    // it's the only one for now so we can use it immediately
+    // Second shader, with xyz coords
+    var program3d = gl.createProgram();
+    scene.shader['3d'] = program3d;
+    gl.attachShader(program3d, vertex3DShader);
+    gl.attachShader(program3d, fragmentShader);
+    gl.linkProgram(program3d);
+
+    program3d.vertexPositionAttribute = gl.getAttribLocation(program3d, "aVertPosition");
+    program3d.texturePositionAttribute = gl.getAttribLocation(program3d, "aTexPosition");
+
+    program3d.transformUniform = gl.getUniformLocation(program3d, "uTransform");
+    program3d.samplerUniform = gl.getUniformLocation(program3d, "sampler");
+    program3d.cursorUniform = gl.getUniformLocation(program3d, "cursorCoord");
+
+    // use first program for now
+
     gl.useProgram(program);
     gl.enableVertexAttribArray(program.vertexPositionAttribute);
     gl.enableVertexAttribArray(program.texturePositionAttribute);
@@ -197,6 +212,7 @@ function loadScene()
     element.texCoordBuffer = texCoordBuffer;
 
     scene.transform = mat3.identity(mat3.create());
+    scene.transform3d = mat4.identity(mat4.create());
 
     scene.texture['default'] = ImageTexture('../samples/helix_blancoHubble_1080.jpg');
 //    scene.texture['default'] = ImageTexture('../samples/grid-checker-fabric-texture-13-512x512.jpg');
@@ -213,16 +229,16 @@ function createRandomTrans(array, startPos)
 
 function createSplitTriaBufs()
 {
-    var vertices = new Float32Array(gridSize*gridSize*6*2); // 
-    var texCoords = new Float32Array(gridSize*gridSize*6*2); // 2 additonal pts per 4 grid pts
+    var vertices = new Float32Array(gridSize*gridSize*6*3); // 
+    var texCoords = new Float32Array(gridSize*gridSize*6*3); // 2 additonal pts per 4 grid pts
     var element = makeSceneElement('triangles2');
 
     element.vertices = vertices;
-    var numVertices = makeGridSplit(vertices, 0, gridSize, -2.0, 4.0); // -1.0);
+    var numVertices = makeGridSplit(vertices, 0, gridSize, -2.0, 4.0, -1.0); // -1.0);
     makeGridSplit(texCoords, 0, gridSize, 0.0, 1.0);
     element.numVertices = numVertices;
     element.offsetElements = 0;
-    element.vectComponents = 2;
+    element.vectComponents = 3;
 
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -251,9 +267,12 @@ function drawScene()
     // always active gl.useProgram(scene.shader['default']);
     // gl.useProgram(scene.shader['default']);
 
-    gl.uniformMatrix3fv(scene.shader['default'].transformUniform, gl.FALSE, scene.transform);
+    var shader = (scene.mode == 'split') ? '3d' : 'default';
+    var transform = (scene.mode == 'split') ? scene.transform3d : scene.transform;
+    var element = (scene.mode == 'split') ? scene.element['triangles2'] : scene.element['triangles'];
 
     if (scene.mode != 'split') {
+	gl.uniformMatrix3fv(scene.shader['default'].transformUniform, gl.FALSE, scene.transform);
 	if (scene.cursorPos !== undefined) {
 	    var inverse_trans = mat3.invert(mat3.create(),scene.transform);
 	    var touch_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
@@ -276,17 +295,14 @@ function drawScene()
 
 
 	}
+    } else {
+	gl.uniformMatrix4fv(scene.shader['3d'].transformUniform, gl.FALSE, scene.transform3d);
     }
     
     // maybe also activate it only once
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, scene.texture['default']);
-    gl.uniform1i(scene.shader['default'].samplerUniform, 0);
-
-    var element = scene.element['triangles'];
-    if (scene.mode == 'split') {
-	element = scene.element['triangles2'];
-    }
+    gl.uniform1i(shader.samplerUniform, 0);
     
     drawSceneElement(element);
 
@@ -383,6 +399,11 @@ function doMouseUp(evt) {
 	    scene.mode = 'split';
 	    if (scene.element['triangles2'] === undefined) {
 		createSplitTriaBufs();
+		var program = scene.shader['3d'];
+		console.log("Switching to 3d shader");
+		gl.useProgram(program);
+		gl.enableVertexAttribArray(program.vertexPositionAttribute);
+		gl.enableVertexAttribArray(program.texturePositionAttribute);
 	    }
 	}
     } else {
@@ -396,8 +417,11 @@ function updateScene() {
 	scene.nextVelFrame = scene.frame + Math.random()*200 - 50;
 	scene.velocity = vec2.fromValues(Math.random()*0.01 - 0.005, Math.random()*0.01 - 0.005);
     }
-    mat3.translate(scene.transform, scene.transform, scene.velocity);
-
+    if (scene.mode != 'split') {
+	mat3.translate(scene.transform, scene.transform, scene.velocity);
+    } else {
+	mat4.translate(scene.transform3d, scene.transform3d, vec3.fromValues(scene.velocity[0], scene.velocity[1], 0.0));
+    }
     state.G.update();
     // return scene.update()
     return true; 
