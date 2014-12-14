@@ -20,7 +20,7 @@ state.G = {
 	    }
 	} else if (this.state == 'blow') {
 	    this.current = this.blow;
-	    this.state = 'none'
+	    this.state = 'none';
 	}
 	return this.current;
     }
@@ -64,7 +64,7 @@ function initShaders() {
 function makeGravMutator(x0,y0,G)
 {
     return function (x,y) {
-	var dir = vec2.normalize(vec2.create(), vec2.fromValues(x-x0,y-y0))
+	var dir = vec2.normalize(vec2.create(), vec2.fromValues(x-x0,y-y0));
 	var pow = G/vec2.squaredLength(dir);
 	//console.log("Created mutator: Pow: " + pow + " G: " + G + " direction: " + dir);
 	return {x: x - dir[0]*pow, y:y - dir[1]*pow};
@@ -74,10 +74,9 @@ function makeGravMutator(x0,y0,G)
 function makeGrid(vertices, startPos, gridSize, left, width, mutator)
 {
     var numPoints = 0;
-    for (i=0; i<=gridSize; ++i) {
-	for (j=0; j<=gridSize; ++j) {
-	    // Set up vertex coordinates [-1, 1] x [-1, 1]
-	    var pos = startPos + 2* (i*gridSize + j);                // 2 elements per vertex
+    var pos = startPos;
+    for (i=0; i<gridSize; ++i) {
+	for (j=0; j<gridSize; ++j) {
 	    var x = left + width*(j/(gridSize-1.0));   // x coord
 	    var y = left + width*(i/(gridSize-1.0)); // y coord
 	    if (mutator!== undefined) {
@@ -86,13 +85,63 @@ function makeGrid(vertices, startPos, gridSize, left, width, mutator)
 		x = pt.x;
 		y = pt.y;
 	    }
-	    vertices[pos] = x;
-	    vertices[pos+1] = y;
+	    vertices[pos++] = x;
+	    vertices[pos++] = y;
 
 	    numPoints++;
+
 	}
     }
-    return numPoints;
+    return numPoints; // or (pos - startPos)/2 now
+}
+
+function makeSceneElement(name) {
+    var element = function() {};
+    if (scene.element === undefined) {
+	scene.element = {};
+    }
+    element.name = name;
+    scene.element[name] = element;
+    return element;
+}
+
+function makeGridElements(elements, start, gridSize, elemMaker)
+{
+    var i,j;
+    var posElem = start;
+    var numElems = 0;
+    for (i=0; i<=gridSize; ++i) {
+	for (j=0; j<=gridSize; ++j) {
+	    // set up vertex index array for elements
+	    if (j<gridSize-1 && i<gridSize-1) {                             
+		// triangle 1 [0, 1, 2]
+		//if (vertexIdx + gridSize > gridSize*gridSize-1) {
+		//    console.log("Overrun: " + i + ", " + j + " idx: " + vertexIdx);
+		//}
+		function addElem(x,y) {
+		    var elem = elemMaker(x,y);
+		    for (var p=0;p<elem.length;++p) 
+			elements[posElem++] = elem[p];
+		    return elem;
+		}
+		addElem(i  , j); numElems++;
+		addElem(i  , j+1); numElems++;
+		addElem(i+1, j+1); numElems++;
+		// triangle 2 [2, 3, 0]
+		addElem(i+1, j+1); numElems++;
+		addElem(i+1, j); numElems++;
+		addElem(i  , j); numElems++;
+	    }
+	}
+    }
+    return numElems;
+}
+
+function makeGridSplit(elements, start, gridSize, left, width)
+{
+    return makeGridElements(elements, start, gridSize, function(i,j) {
+	return [left + width*(j/(gridSize-1.0)), left + width*(i/(gridSize-1.0))];
+    });
 }
 
 
@@ -100,92 +149,82 @@ var gridSize = 20;
 function loadScene()
 {
 
-    scene.element = {};
-    scene.buffer = {};
     scene.texture = {};
     scene.frame = 0;
 
-    scene.element['triangles'] = function() {};
+    var element = makeSceneElement('triangles');
 
     var vertices = new Float32Array(gridSize*gridSize*2);
-    scene.element['triangles'].vertices = vertices;
+    element.vertices = vertices;
+    element.vectComponents = 2;
     
     var texCoords = new Float32Array(gridSize*gridSize*2);
     var elements = new Uint16Array(gridSize*gridSize*6); // two triangles per subdivided quad
-    var posElem = 0;
-    var i,j;
+
 
 
     var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0);
-    for (i=0; i<=gridSize; ++i) {
-	for (j=0; j<=gridSize; ++j) {
-	    // Set up vertex coordinates [-1, 1] x [-1, 1]
-	    var pos = 2* (i*gridSize + j);                // 2 elements per vertex
-	    // Set up texture coordinates [0, 1] x [0, 1]
-	    texCoords[pos] = j/(gridSize-1.0);
-	    texCoords[pos+1] = i/(gridSize-1.0);
-	    // also set up vertex index array for elements
-	    if (j<gridSize-1 && i<gridSize-1) {                             
-		var vertexIdx = i*gridSize + j;
-		// triangle 1 [0, 1, 2]
-		if (vertexIdx + gridSize > gridSize*gridSize-1) {
-		    console.log("Overrun: " + i + ", " + j + " idx: " + vertexIdx);
-		}
-		elements[posElem++] = vertexIdx;
-		elements[posElem++] = vertexIdx + 1;
-		elements[posElem++] = vertexIdx + gridSize + 1;
-		// triangle 2 [2, 3, 0]
-		elements[posElem++] = vertexIdx + gridSize + 1;
-		elements[posElem++] = vertexIdx + gridSize;
-		elements[posElem++] = vertexIdx; 
-	    }
+    makeGrid(texCoords, 0, gridSize, 0.0, 1.0);
 
-	}
-    }
-
-
+    var posElem = makeGridElements(elements, 0, gridSize, function(i,j) { return [i*gridSize + j]; });
 
     //scene.element['triangles'].numElements = gridSize * gridSize * 6;
-    scene.element['triangles'].numElements = posElem;
-    scene.element['triangles'].numVertices = numVertices;
-    scene.element['triangles'].offsetElements = 0;
+    element.numElements = posElem;
+    element.numVertices = numVertices;
+    element.offsetElements = 0;
 
     // Now create buffers for those arrays
-
 
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);   // We expect to change vertex coordinates per draw
-    scene.buffer['vertex'] = vertexBuffer;
+    element.vertexBuffer = vertexBuffer;
     
-    gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0); 
-
     var elemBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer); 
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, elements, gl.STATIC_DRAW);
-    scene.buffer['element'] = elemBuffer;
+    element.elemBuffer = elemBuffer;
 
     var texCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
-    scene.buffer['tCoord'] = texCoordBuffer;
+    element.texCoordBuffer = texCoordBuffer;
 
-    
     scene.transform = mat3.identity(mat3.create());
-    //gl.useProgram(scene.shader['default']);
-
-
 
     scene.texture['default'] = ImageTexture('../samples/helix_blancoHubble_1080.jpg');
 //    scene.texture['default'] = ImageTexture('../samples/grid-checker-fabric-texture-13-512x512.jpg');
 
-
-
-//    makeMinimalScene();
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     setViewportSize();
 }
 
+
+function createSplitTriaBufs()
+{
+    var vertices = new Float32Array(gridSize*gridSize*6*2); // 
+    var texCoords = new Float32Array(gridSize*gridSize*6*2); // 2 additonal pts per 4 grid pts
+    var element = makeSceneElement('triangles2');
+
+    element.vertices = vertices;
+    var numVertices = makeGridSplit(vertices, 0, gridSize, -2.0, 4.0);
+    makeGridSplit(texCoords, 0, gridSize, 0.0, 1.0);
+    element.numVertices = numVertices;
+    element.offsetElements = 0;
+    element.vectComponents = 2; // to 3
+
+    var vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
+    element.vertexBuffer = vertexBuffer;
+    
+    var texCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+    element.texCoordBuffer = texCoordBuffer;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}
 
 function deviceToFrameCoord(device_pos)
 {
@@ -203,27 +242,29 @@ function drawScene()
 
     gl.uniformMatrix3fv(scene.shader['default'].transformUniform, gl.FALSE, scene.transform);
 
-    var inverse_trans = mat3.invert(mat3.create(),scene.transform);
-    if (scene.cursorPos !== undefined) {
-	var touch_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
-	var device_pos =  vec2.transformMat3(vec2.create(), scene.cursorPos, scene.transform);
-	var canvas = document.getElementById("canvas1");
-	var w = canvas.clientWidth;
-	var h = canvas.clientHeight;
-	var frame_pos = deviceToFrameCoord(scene.cursorPos); // retransform relative canvas pos back to framebuffer (almost the same)
-//	gl.uniform2f(scene.shader['default'].cursorUniform, device_pos[0], device_pos[1]);
-	gl.uniform2f(scene.shader['default'].cursorUniform, frame_pos[0], frame_pos[1]);
-	//console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
+    if (scene.mode != 'split') {
+	if (scene.cursorPos !== undefined) {
+	    var inverse_trans = mat3.invert(mat3.create(),scene.transform);
+	    var touch_pos = vec2.transformMat3(vec2.create(), scene.cursorPos, inverse_trans);
+	    var device_pos =  vec2.transformMat3(vec2.create(), scene.cursorPos, scene.transform);
+	    var canvas = document.getElementById("canvas1");
+	    var w = canvas.clientWidth;
+	    var h = canvas.clientHeight;
+	    var frame_pos = deviceToFrameCoord(scene.cursorPos); // retransform relative canvas pos back to framebuffer (almost the same)
+	    //	gl.uniform2f(scene.shader['default'].cursorUniform, device_pos[0], device_pos[1]);
+	    gl.uniform2f(scene.shader['default'].cursorUniform, frame_pos[0], frame_pos[1]);
+	    //console.log("Cursor: " + scene.cursorPos.toString() + " -> " + device_pos.toString() + " -> " + frame_pos.toString());
 
-	var vertices = scene.element['triangles'].vertices;
-	gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vertex']);
-	var gravMutator = makeGravMutator(touch_pos[0], touch_pos[1], state.G.current);
-	var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0, gravMutator);
-	//var subArr = vertices.subarray(numVertices*2);  // how many items we want to replace
-	gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices); //subArr);   // here we replace basically all of them.
-	// we are generating more vertices than we should?
+	    var vertices = scene.element['triangles'].vertices;
+	    gl.bindBuffer(gl.ARRAY_BUFFER, scene.element['triangles'].vertexBuffer);
+	    var gravMutator = makeGravMutator(touch_pos[0], touch_pos[1], state.G.current);
+	    var numVertices = makeGrid(vertices, 0, gridSize, -2.0, 4.0, gravMutator);
+	    //var subArr = vertices.subarray(numVertices*2);  // how many items we want to replace
+	    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices); //subArr);   // here we replace basically all of them.
+	    // we are generating more vertices than we should?
 
 
+	}
     }
     
     // maybe also activate it only once
@@ -231,23 +272,37 @@ function drawScene()
     gl.bindTexture(gl.TEXTURE_2D, scene.texture['default']);
     gl.uniform1i(scene.shader['default'].samplerUniform, 0);
 
-    // draw something
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['vertex']);
-    gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0); 
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.buffer['element']);
-  
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene.buffer['tCoord'])
-    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, 2, gl.FLOAT, false, 0, 0);     
-
-  
-    gl.drawElements(gl.TRIANGLES, scene.element['triangles'].numElements, gl.UNSIGNED_SHORT, scene.element['triangles'].offsetElements);
+    var element = scene.element['triangles'];
+    if (scene.mode == 'split') {
+	element = scene.element['triangles2'];
+    }
+    
+    drawSceneElement(element);
 
     gl.flush();
 }
 
 
+function drawSceneElement (element) // and shader as param later on
+{
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, element.vertexBuffer);
+    gl.vertexAttribPointer(scene.shader['default'].vertexPositionAttribute, element.vectComponents, gl.FLOAT, false, 0, 0); 
+
+    if (element.elemBuffer) {
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, element.elemBuffer);
+    }
+	
+    gl.bindBuffer(gl.ARRAY_BUFFER, element.texCoordBuffer);
+    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, element.vectComponents, gl.FLOAT, false, 0, 0);     
+
+    if (element.elemBuffer !==  undefined) {
+	gl.drawElements(gl.TRIANGLES, element.numElements, gl.UNSIGNED_SHORT, element.offsetElements);
+    } else {
+	gl.drawArrays(gl.TRIANGLES, element.offsetElements, element.numVertices);
+    }
+
+}
 function doResize() {
     if (gl !== undefined) {
 	setViewportSize();
@@ -313,6 +368,12 @@ function doMouseUp(evt) {
     if (state.G.charged()) {
 	state.G.state = 'blow';
 	state.G.blown += 1;
+	if (state.G.blown > 1) {
+	    scene.mode = 'split';
+	    if (scene.element['triangles2'] === undefined) {
+		createSplitTriaBufs();
+	    }
+	}
     } else {
 	state.G.state = 'none';
     }
