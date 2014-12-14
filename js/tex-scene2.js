@@ -137,11 +137,17 @@ function makeGridElements(elements, start, gridSize, elemMaker)
     return numElems;
 }
 
-function makeGridSplit(elements, start, gridSize, left, width)
+function makeGridSplit(elements, start, gridSize, left, width, zcoord)
 {
-    return makeGridElements(elements, start, gridSize, function(i,j) {
-	return [left + width*(j/(gridSize-1.0)), left + width*(i/(gridSize-1.0))];
-    });
+    if (zcoord === undefined) {
+	return makeGridElements(elements, start, gridSize, function(i,j) {
+	    return [left + width*(j/(gridSize-1.0)), left + width*(i/(gridSize-1.0))];
+	});
+    } else {
+	return makeGridElements(elements, start, gridSize, function(i,j) {
+	    return [left + width*(j/(gridSize-1.0)), left + width*(i/(gridSize-1.0)), zcoord];
+	});
+    }
 }
 
 
@@ -200,6 +206,11 @@ function loadScene()
 }
 
 
+function createRandomTrans(array, startPos)
+{
+    return mat4.create();
+}
+
 function createSplitTriaBufs()
 {
     var vertices = new Float32Array(gridSize*gridSize*6*2); // 
@@ -207,11 +218,11 @@ function createSplitTriaBufs()
     var element = makeSceneElement('triangles2');
 
     element.vertices = vertices;
-    var numVertices = makeGridSplit(vertices, 0, gridSize, -2.0, 4.0);
+    var numVertices = makeGridSplit(vertices, 0, gridSize, -2.0, 4.0); // -1.0);
     makeGridSplit(texCoords, 0, gridSize, 0.0, 1.0);
     element.numVertices = numVertices;
     element.offsetElements = 0;
-    element.vectComponents = 2; // to 3
+    element.vectComponents = 2;
 
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -294,7 +305,7 @@ function drawSceneElement (element) // and shader as param later on
     }
 	
     gl.bindBuffer(gl.ARRAY_BUFFER, element.texCoordBuffer);
-    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, element.vectComponents, gl.FLOAT, false, 0, 0);     
+    gl.vertexAttribPointer(scene.shader['default'].texturePositionAttribute, 2, gl.FLOAT, false, 0, 0);     
 
     if (element.elemBuffer !==  undefined) {
 	gl.drawElements(gl.TRIANGLES, element.numElements, gl.UNSIGNED_SHORT, element.offsetElements);
