@@ -3,6 +3,6 @@ This is a repository for exercises, examples, and auxiliary material for 'Comput
 It is roughly divided in folders corresponding to lecture units.
 
 Examples in Python require matplotlib, numpy.  IPython comes in handy.
-Examples in js (later) require WebGL enabled 0.
+Examples in js require WebGL enabled browser.
 
 
