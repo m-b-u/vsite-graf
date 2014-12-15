@@ -395,7 +395,7 @@ function doMouseUp(evt) {
     if (state.G.charged()) {
 	state.G.state = 'blow';
 	state.G.blown += 1;
-	if (state.G.blown > 1) {
+	if (state.G.blown > 2) {
 	    scene.mode = 'split';
 	    if (scene.element['triangles2'] === undefined) {
 		createSplitTriaBufs();
