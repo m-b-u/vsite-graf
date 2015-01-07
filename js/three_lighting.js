@@ -46,8 +46,10 @@ console.log("Started creating scene");
 createLights();
 createControls();
 var geometry = new THREE.BoxGeometry(20, 0.2, 20);
-//var material = new THREE.MeshBasicMaterial({ color: 0xf0f0ff });
-var material = new THREE.MeshPhongMaterial({ color: 0xf0f0ff });
+
+var texture = new THREE.Texture();
+var material = new THREE.MeshBasicMaterial({ color: 0xf0f0ff });
+//var material = new THREE.MeshFaceMaterial({ color: 0xffffff, map:texture });
 var plane = new THREE.Mesh(geometry, material);
 plane.matrixAutoUpdate = true;
 plane.position.set (0, -1.2, 0);
@@ -93,7 +95,7 @@ manager.onProgress = function ( item, loaded, total ) {
 
 
 
-var texture = new THREE.Texture();
+
 var imageLoader = new THREE.ImageLoader(manager);
 imageLoader.load( '../samples/UV_Grid_Sm.jpg', function ( image ) {
     texture.image = image;
