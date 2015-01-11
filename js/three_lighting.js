@@ -16,7 +16,7 @@ function createLights() {
     var light_ambient = new THREE.AmbientLight(0x404040);
     scene.add(light_ambient);
     
-    var spotLight = new THREE.SpotLight( 0xffffff );
+    var spotLight = new THREE.SpotLight( 0x3030ff );
     spotLight.position.set(100, 300, 1000);
     spotLight.castShadow = true;
     spotLight.shadowMapWidth = 1024;

@@ -62,7 +62,7 @@ manager.onProgress = function ( item, loaded, total ) {
 };
 
 
-var model_material = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x000099, shininess: 30, shading: THREE.FlatShading });
+var model_material = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x000099, shininess: 300, shading: THREE.SmoothShading });
 // model
 var obj = null;
 //var loader = new THREE.OBJMTLLoader(manager);
