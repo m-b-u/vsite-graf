@@ -287,17 +287,17 @@ function onKeyDown(event)
 {
     var result;
     switch (event.keyCode) {
-      case 49: // '1'
+      case '1': // '1'
 	// Day/night
         break;
       case 50:
 	// Sea lod
         break;
-      case 32:
-      case 69:
+      case ' ':
+      case 'e':
 	fireFlare();
 	break;
-      case 67: // 'C'
+      case 'c': // 'C'
 	switchCamera();
 	break;
     }
