@@ -3,6 +3,9 @@ var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHei
 camera.position.set (30, 30, 30);
 var controls;
 var renderer = new THREE.WebGLRenderer();
+renderer.shadowMapEnabled = true;
+renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
 renderer.setSize( window.innerWidth, window.innerHeight);
 document.body.appendChild( renderer.domElement);
 
@@ -13,18 +16,18 @@ function createLights() {
     light.position.set(250, 40, 560);
     light.castShadow = true;
     scene.add(light);
-    var light_ambient = new THREE.AmbientLight(0x404040);
+    var light_ambient = new THREE.AmbientLight(0x303030);
     scene.add(light_ambient);
     
-    var spotLight = new THREE.SpotLight( 0x3030ff );
+    var spotLight = new THREE.SpotLight( 0x808080 );
     spotLight.position.set(100, 300, 1000);
     spotLight.castShadow = true;
     spotLight.shadowMapWidth = 1024;
     spotLight.shadowMapHeight = 1024;
     spotLight.shadowCameraNear = 500;
     spotLight.shadowCameraFar = 4000;
-    spotLight.shadowCameraFov = 30;
-    spotLight.target.position.set( 10, 0, 0);
+    spotLight.shadowCameraFov = 20;
+    spotLight.target.position.set( 15, 0, 0);
     scene.add(spotLight);
 }
 
