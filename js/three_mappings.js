@@ -6,14 +6,14 @@ camera.lookAt (0, 10, 0);
 
 var clock = new THREE.Clock(true);
 
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight);
 renderer.shadowMapEnabled = true;
 renderer.shadowMapType = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 
-var rec_texture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat } );
+var rec_texture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat, antialias: true } );
 
 
 createControls();
@@ -68,7 +68,7 @@ function createSign()
     var material = new THREE.MeshBasicMaterial( {map: texture, side:THREE.DoubleSide } );
 
     var sign = new THREE.Mesh( new THREE.PlaneGeometry(canvas.width, canvas.height), material );
-    sign.position.set(0,2,0);
+    sign.position.set(0,2.04,0);
     sign.scale.set(0.01,0.01,0.01);
     pole.add(sign);
 
