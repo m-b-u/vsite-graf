@@ -16,7 +16,7 @@ document.body.appendChild(renderer.domElement);
 var rec_texture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat, antialias: true } );
 
 
-createControls();
+createTrackballControl(camera);
 createLights();
 
 createSkymap();
@@ -105,17 +105,6 @@ function createLights()
     scene.add(light);
 }
 
-function createControls() {
-    controls = new THREE.TrackballControls( camera );
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 1.1;
-    
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.15;
-}
 
 function createSkymap()
 {
