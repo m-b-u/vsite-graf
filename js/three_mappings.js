@@ -18,18 +18,8 @@ var rec_texture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHe
 
 createControls();
 createLights();
-/*
-var url_prefix = "../images/sky/sky_";
-var urls = [ url_prefix + "posx.jpg", url_prefix + "negx.jpg",
-	     url_prefix + "posy.jpg", url_prefix + "negy.jpg",
-	     url_prefix + "posz.jpg", url_prefix + "negz.jpg" ];
-
-var textureCube = THREE.ImageUtils.loadTextureCube( urls );
-*/
-
 
 createSkymap();
-
 
 var mat_floor = new THREE.MeshLambertMaterial( { ambient: 0x303010, color: 0x80A030 });
 var floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300, 5, 5), mat_floor);
@@ -147,7 +137,6 @@ function createSkymap()
     var geometry = new THREE.SphereGeometry(3000, 60, 40);
     var uniforms = {
 	texture: { type: 't', value: THREE.ImageUtils.loadTexture( '../images/skymap_photo8.jpg') }
-//	texture: { type: 't', value: THREE.ImageUtils.loadTexture( '../images/ANGMAP11.jpg') }
     };
 
     var material = new THREE.ShaderMaterial( {
@@ -155,11 +144,9 @@ function createSkymap()
 	vertexShader:   sky_vertex,
 	fragmentShader: sky_fragment
     });
-//    material.side = THREE.BackSide;
     skyBox = new THREE.Mesh(geometry, material);
     skyBox.scale.set(-1, 1, 1);
     skyBox.eulerOrder = 'XZY';
-//    skyBox.renderDepth = 7000.0;
 
     scene.add(skyBox);
 
