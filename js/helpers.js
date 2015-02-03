@@ -19,39 +19,58 @@ function createTrackballControl(camera) {
     vs.controls = controls;
 }
 
+function KeyMapper() {
+    this.keymap = {};
+    this.addKeyMapping('?', function(keyCode) {
+	console.log("Help!");
+	var help = document.getElementById('helpdiv');
+	help.style.visibility = 'visible';
 
+    }, "Shows help window");
+    window.addEventListener('keydown', this.onKeyDown, false);
+}
 
-// similar for camera and resize. register cameras
-function getKeyMapper () {
-    function onKeyDown(evt) {
-	if (vs.keymap === undefined) 
+KeyMapper.prototype = {
+    onKeyDown: function (evt) {
+	if (this.keymap === undefined) 
 	    return;
-	for (var key in vs.keymap) {
-	    if (vs.keymap.hasOwnProperty(key)) {
+	for (var key in this.keymap) {
+	    if (this.keymap.hasOwnProperty(key)) {
 		if (key.getKeyCode() == evt.keyCode)
-		    vs.keymap[key].func(evt.keyCode);
+		    this.keymap[key].func(evt.keyCode);
 	    }
 	}
-    }
-
-    if (vs.keymap === undefined) {
-	vs.keymap = {};
-	window.addEventListener('keydown', onKeyDown, false);
-    }
-    vs.keymap.addKeyMapping = function (key, func, description) {
+    }, 
+    addKeyMapping: function (key, func, description) {
 	var map = {};
 	map.func = func;
 	map.description = description;
-	vs.keymap[key] = map;
-	
-    };
-   vs.keymap.addElement = function () {
-       // create elem fill with descs, add it to doc
-   }
+	this.keymap[key] = map;
+    },
+    addElement: function () {
+	var element = document.createElement("DIV");
+	for (var key in this.keymap) {
+	    if (this.keymap.hasOwnProperty(key)) {
+		var item = document.createTextNode("'" + key + "'" + this.keymap[key].description);
+		element.appendChild(item);
+	    }
+	}
+	element.id = 'helpdiv';
+	element.style.visibility = 'hidden';
+
+	var help_element = document.createElement("DIV");
+	help_element.appendChild(document.createTextNode("Press ?"));
+	document.body.appendChild(help_element);
+    }
+};
+    
+
+// similar for camera and resize. register cameras
+function getKeyMapper () {
+    if (vs.keymap === undefined) {
+	vs.keymap = new KeyMapper();
+    }
+    return vs.keymap;
 }
 
-
-function registerKeyMapping (keycode, func, description)
-{
-}
 

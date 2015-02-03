@@ -51,18 +51,6 @@ function createLights() {
     
 }
 
-function createControls() {
-    controls = new THREE.TrackballControls( camera );
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 1.1;
-    
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.15;
-}
-
 
 function createSea()
 {
@@ -175,7 +163,7 @@ console.log("Started creating scene");
 
 
 createLights();
-createControls();
+createTrackballControls();
 createSea();
 var boat = createBoat();
 scene.add(boat);

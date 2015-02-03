@@ -152,15 +152,13 @@ function onWindowResize() {
 	camera.updateProjectionMatrix();    
     }
     fixCamera(camera);
-    if (camera2) 
-	fixCamera(camera2);
     renderer.setSize( window.innerWidth, window.innerHeight );
     
 }
 
 window.addEventListener( 'resize', onWindowResize, false );
-window.addEventListener( 'keydown', onKeyDown, false );
 
+getKeyMapper().addElement();
 
 
 function render() {
@@ -173,17 +171,6 @@ function render() {
     renderer.render(scene, camera);
 
 }
-
-function onKeyDown(event)
-{
-    var result;
-    switch (event.keyCode) {
-      case 'e':
-	// NOP
-	break;
-    }
-}
-
 
 console.log("Up to render!");
 render();
