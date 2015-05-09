@@ -17,7 +17,7 @@ var rec_texture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHe
 
 
 createTrackballControl(camera);
-createLights();
+var light = createLights();
 
 createSkymap();
 
@@ -103,6 +103,7 @@ function createLights()
     light.shadowMapHeight = 512;
     
     scene.add(light);
+    return light;
 }
 
 
@@ -158,6 +159,11 @@ function onWindowResize() {
 
 window.addEventListener( 'resize', onWindowResize, false );
 
+
+console.log("Keymapper!");
+getKeyMapper().addKeyMapping('s', function() { 
+    light.shadowCameraVisible = !light.shadowCameraVisible;
+    }, 'Toggle shadow camera preview');
 getKeyMapper().addElement();
 
 
