@@ -9,8 +9,8 @@ def show_line_vs_pixel_grid(xres, yres):
     p2 = ( 3 * xres // 4 , 3 * yres // 4 )
 
     fix, axis = plt.subplots (1)
-    axis.set_xlim( 0, xres-1) 
-    axis.set_ylim( 0, yres-1) 
+    axis.set_xlim( 0, xres-1)
+    axis.set_ylim( 0, yres-1)
 
     axis.set_title('Line: (%s, %s) - (%s, %s)' % (p1 + p2) )
 
@@ -18,7 +18,7 @@ def show_line_vs_pixel_grid(xres, yres):
     for x in np.arange(start + 0.5, end + 0.5, 1):   # draw lines at half-points manually
         axis.axvline (x, color='lightgray')
 
-    axis.xaxis.set_ticks(xrange(int(start), int(end+1)))
+    axis.xaxis.set_ticks(xran+ge(int(start), int(end+1)))
 
     start, end = axis.get_ylim()
     for y in np.arange(start + 0.5, end + 0.5, 1):
