@@ -13,7 +13,7 @@ def convert_to_uint8(img):
 
 def get_image_minmax (img):
     """Get minimum and maximum value of any pixel component in the image"""
-    print "Image min, max: ", img.min(), img.max()
+    print("Image min, max: ", img.min(), img.max())
     return img.min(), img.max()
 
 def adjust_levels(img, in_levels, out_levels, gamma=1.0):

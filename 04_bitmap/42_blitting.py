@@ -20,7 +20,7 @@ dat = ax.imshow(img, interpolation='nearest', animated=True)
 fb = np.empty_like(img)
 
 x, y = 20, 0
-for i in xrange(50):
+for i in range(50):
     fb[:] = img[:]
     draw_bitmap(fb, x, y, alien)
     x += 4
@@ -36,7 +36,7 @@ x2 = (x2 * 3) // 4
 y2 = 10
 
 img[:] = fb[:]     # keep the alien that has landed
-for i in xrange(50):
+for i in range(50):
     fb[:] = img[:]
     draw_bitmap(fb, x2, y2, alien, mask)
     x2 -= 3

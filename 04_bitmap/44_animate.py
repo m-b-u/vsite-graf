@@ -29,8 +29,8 @@ mask = [mask, mask2]
 def draw_fleet(fb, x, y, rows, columns, padding, alien, mask, img_idx):
     """ Draw table with same bitmap"""
     w, h = get_image_size(alien[img_idx])
-    for i in xrange(columns):
-        for j in xrange(rows):
+    for i in range(columns):
+        for j in range(rows):
             draw_bitmap_2(fb, x + i*(w+padding), y + j*(h+padding),
                           alien[img_idx], mask[img_idx])
 
@@ -69,7 +69,7 @@ def animate():
     img_idx = 0
     key = False
     def on_key_press(event):
-        print "Key!"
+        print("Key!")
         key = True
     #hid = fig.canvas.mpl_connect('key_press_event', on_key_press)
     while y <= yend and not key:

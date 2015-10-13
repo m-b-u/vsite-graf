@@ -151,7 +151,7 @@ class ImageDialog(ImageHandlers):
     def update_histogram(self):
         for ax, im in zip(self.axishist, [self.image, self.preview]):
             im_ = get_component_view(im)
-            max_ = None 
+            max_ = -1e100 ### Check this 
             for comp in ('r', 'g', 'b'):
                 n, bin, patches = ax.hist (im_[comp].ravel(), bins=256, histtype='stepfilled', color=comp, edgecolor='none', alpha=1 if comp=='r' else 0.8)
                 #min_ = np.min(n[1:-1])
@@ -182,7 +182,7 @@ if len(sys.argv)>2:
     fname = sys.argv[2]
     function = action_map.get(fname, None)
     if function:
-        print "Perform: ", fname
+        print(("Perform: ", fname))
         function(None)
 
 dlg.run()
