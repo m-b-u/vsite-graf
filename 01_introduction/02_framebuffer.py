@@ -2,13 +2,13 @@ import numpy as np
 
 def clear_framebuffer(A):
     assert(A.ndim == 2) 
-    for i in range(A.shape[0]):
-        for j in range(A.shape[1]):
+    for i in xrange(A.shape[0]):
+        for j in xrange(A.shape[1]):
             A[i][j] = 0
     
 def clear_framebuffer_1D(A_):
     assert(A_.ndim == 1)
-    for i in range(len(A)):
+    for i in xrange(len(A)):
         A_[i] = 0
     # shorter: A[:] = 0
 
@@ -22,11 +22,11 @@ if __name__=='__main__':
 
     A[3][15] = 9
     
-    print(A)
+    print A
 
     A[3, 15] = 8
 
-    print(A)
+    print A
 
     A_ = A.ravel()
 
@@ -34,10 +34,10 @@ if __name__=='__main__':
 
     A_[3*M + 15] = 7
 
-    print(A)
+    print A
 
-    print('#' * 40)
+    print '#' * 40
 
-    print(A_)
+    print A_
 
-    print("A.strides: ", A.strides)
+    print "A.strides: ", A.strides
