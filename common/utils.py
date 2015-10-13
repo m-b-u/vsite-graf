@@ -63,7 +63,7 @@ def putpixel(img, x, y, value):
     try:
         img[y][x] = value
     except IndexError:
-        print "Coordinates: (", x, y, ") out of bounds"
+        print("Coordinates: (", x, y, ") out of bounds")
 
 def getpixel(img, x, y):
     """ Returns the value in image array on given position

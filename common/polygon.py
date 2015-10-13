@@ -16,7 +16,7 @@ def plot_polygon(axis, p, color='b'):
     p2 = p[:]
     p2.append(p[0])
     # convert list of tuples to list with x coords and list with y coords
-    axis.plot(*zip(*p2), color=color, marker='o', markersize=3, linestyle='-')
+    axis.plot(*list(zip(*p2)), color=color, marker='o', markersize=3, linestyle='-')
 
 def orient_up(p1, p2):
     """ Orient the line so that the first point has smaller y value [1] """
@@ -97,7 +97,7 @@ def add_entering_edges(active_edges, edges, edge_idx, y):
 def remove_leaving_edges(active_edge, y):
     """ Remove the edges from active_edge if
     they are above scanline y """
-    for i in xrange(len(active_edge)-1, -1, -1): # from last edge to first
+    for i in range(len(active_edge)-1, -1, -1): # from last edge to first
         if y > active_edge[i][0]:    # y > ymax, leave the bottom pixel
             del active_edge[i]
 
@@ -111,7 +111,7 @@ def draw_convex_polygon(img, points, val):
     """
     # Create list of edges from points [ (p0, p1), (p1, p2), ... , (pn-1, p0) ]
     edge = [orient_up(a, b) for (a, b)
-            in itertools.izip_longest(points, points[1:], fillvalue=points[0])]
+            in itertools.zip_longest(points, points[1:], fillvalue=points[0])]
     # sort by smaller y. We are now flipping edges by y without real need.
     # Not the fastest way to sort with comparison like this
     edge.sort(lambda l1, l2: int(min(l1[0][1], l1[1][1]) -
@@ -119,7 +119,7 @@ def draw_convex_polygon(img, points, val):
     active_edge = []
     edge_idx = 0 # edges up to here were processed
     # from the smallest  to largest y found in any edge
-    for y in xrange(edge[0][0][1], edge[-1][1][1]+1):      # TODO: watch out if you remove sorting of edges!!
+    for y in range(edge[0][0][1], edge[-1][1][1]+1):      # TODO: watch out if you remove sorting of edges!!
         edge_idx = add_entering_edges(active_edge, edge, edge_idx, y)
         intersections = get_intersection_points(active_edge, y)
         for i, pt in enumerate(intersections):

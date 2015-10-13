@@ -14,8 +14,8 @@ def draw_bitmap(img, x, y, bitmap, mask=None):
         assert bitmap.shape[0:2] == mask.shape
 
     w, h = get_image_size(bitmap)
-    for yi in xrange(h):
-        for xi in xrange(w):
+    for yi in range(h):
+        for xi in range(w):
             # anything that is not 0 in mask means take that pixel
             m = mask is None or getpixel(mask, xi, yi)
             if m:
@@ -48,8 +48,8 @@ def mask_from_bitmap(img):
 
     mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
     w, h = get_image_size(img)
-    for i in xrange(h):
-        for j in xrange(w):
+    for i in range(h):
+        for j in range(w):
             # in this case neighbours include pixel itself
             neighbours = img[max(0, i-1) : min(i+1, h-1),
                              max(0, j-1) : min(j+1, w-1)]
