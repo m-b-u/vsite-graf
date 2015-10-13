@@ -18,16 +18,16 @@ def show_line_vs_pixel_grid(xres, yres):
     for x in np.arange(start + 0.5, end + 0.5, 1):   # draw lines at half-points manually
         axis.axvline (x, color='lightgray')
 
-    axis.xaxis.set_ticks(xran+ge(int(start), int(end+1)))
+    axis.xaxis.set_ticks(range(int(start), int(end+1)))
 
     start, end = axis.get_ylim()
     for y in np.arange(start + 0.5, end + 0.5, 1):
         axis.axhline (y, color='lightgray')
 
-    axis.yaxis.set_ticks(xrange(int(start), int(end+1)))
+    axis.yaxis.set_ticks(range(int(start), int(end+1)))
 
-    axis.plot( *zip(p1, p2), color='g' )
-    axis.plot( *zip(p1, p2), color='b', marker='o', markersize=3, linestyle='None' )
+    axis.plot( *list(zip(p1, p2)), color='g' )
+    axis.plot( *list(zip(p1, p2)), color='b', marker='o', markersize=3, linestyle='None' )
 
     plt_show()
 

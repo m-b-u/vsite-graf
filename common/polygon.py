@@ -1,7 +1,7 @@
 """ Functions related to scanline conversion of polygon to bitmap """
 
 import itertools
-
+import functools
 import bisect
 
 def plot_polygon(axis, p, color='b'):
@@ -90,7 +90,7 @@ def add_entering_edges(active_edges, edges, edge_idx, y):
             last_added = edge_idx - 1
 
     # sort active edges by xmin
-    active_edges.sort(lambda l1, l2: int(l1[1] - l2[1]))
+    active_edges.sort(key=functools.cmp_to_key(lambda l1, l2: int(l1[1] - l2[1])))
     # TODO: maybe not even sort these, but just intersection pts
     return last_added + 1
 
@@ -114,8 +114,8 @@ def draw_convex_polygon(img, points, val):
             in itertools.zip_longest(points, points[1:], fillvalue=points[0])]
     # sort by smaller y. We are now flipping edges by y without real need.
     # Not the fastest way to sort with comparison like this
-    edge.sort(lambda l1, l2: int(min(l1[0][1], l1[1][1]) -
-                                 min(l2[0][1], l2[1][1])))
+    edge.sort(key=functools.cmp_to_key (lambda l1, l2: int(min(l1[0][1], l1[1][1]) -
+                                 min(l2[0][1], l2[1][1]))) )
     active_edge = []
     edge_idx = 0 # edges up to here were processed
     # from the smallest  to largest y found in any edge

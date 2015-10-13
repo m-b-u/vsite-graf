@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 import numpy as np
 
@@ -30,17 +30,17 @@ def show_line_dda_with_rounding_error(xres, yres):
     axis = [plt.subplot(grid[i]) for i in [0, 1]]
 
     axis[0].imshow(im, cm.gray, interpolation = 'nearest')
-    axis[0].plot( *zip(p1, p2), color='g' )
+    axis[0].plot( *list(zip(p1, p2)), color='g' )
     axis[0].set_xlim( 0, xres-1)
     axis[0].set_ylim( 0, yres-1)
 
-    axis[0].xaxis.set_ticks( xrange(0, xres, 8) )
+    axis[0].xaxis.set_ticks( range(0, xres, 8) )
     axis[0].grid(True, color = 'white', which = 'major')
 
-    axis[1].plot(*zip(*error))
+    axis[1].plot(*list(zip(*error)))
     axis[1].set_xlim( 0, xres-1) 
     #axis[1].xaxis.set_ticks(0, xres-1 )
-    axis[1].xaxis.set_ticks( xrange(0, xres, 8) )
+    axis[1].xaxis.set_ticks( range(0, xres, 8) )
     axis[1].grid(True, which = 'major')
 
     #axis[1].set_aspect(1)

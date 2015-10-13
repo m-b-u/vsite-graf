@@ -13,7 +13,7 @@ def show_line_test(xres, yres, line_func):
 
     def test_line(center, segments, line_func):
         angle_step = 2*math.pi/segments
-        for i in xrange(segments):
+        for i in range(segments):
             angle = i * angle_step    # angle in radians
             line_func (im, center[0], center[1],
                        center[0] + int(a*math.cos(angle)),

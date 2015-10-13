@@ -20,7 +20,7 @@ import math
 
 scale = 30
 center = xres/2, yres/2
-for i in xrange(15):
+for i in range(15):
 
     pts = [(int(center[0] + p[0]*scale),
             int(center[1] + p[1]*scale)) for p in point]

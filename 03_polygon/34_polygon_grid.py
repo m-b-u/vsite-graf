@@ -24,8 +24,8 @@ pts = np.dstack((y, x))
 
 c = 0
 
-for i in xrange(pts.shape[0]-1):
-    for j in xrange(pts.shape[1]-1):
+for i in range(pts.shape[0]-1):
+    for j in range(pts.shape[1]-1):
         draw_convex_polygon(img,
                             [pts[j][i], pts[j+1][i],
                              pts[j+1][i+1], pts[j][i+1]],
