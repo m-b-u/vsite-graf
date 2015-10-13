@@ -31,8 +31,8 @@ def show_line_field(im, p1, p2):
     fig, ax = plt.subplots(2)
     ax[0].imshow(im, cm.rainbow_r, interpolation = 'nearest')
     ax[0].plot( *zip(p1, p2), color='w' )
-    ax[0].set_xlim( 0, xres-1) 
-    ax[0].set_ylim( 0, yres-1) 
+    ax[0].set_xlim( 0, xres-1)
+    ax[0].set_ylim( 0, yres-1)
 
     pixels = []
     def putpixel_collect(im, x1, y1, value):
@@ -46,8 +46,8 @@ def show_line_field(im, p1, p2):
     ax[1].imshow(im2, cm.rainbow_r, interpolation = 'nearest')
     ax[1].plot( *zip(p1, p2), color='b' )
     ax[1].plot( *zip(*pixels), color='b', marker='o', markersize=2, linestyle='None' )
-    ax[1].set_xlim( 0, xres-1) 
-    ax[1].set_ylim( 0, yres-1) 
+    ax[1].set_xlim( 0, xres-1)
+    ax[1].set_ylim( 0, yres-1)
 
     plt_show()
 
@@ -55,7 +55,7 @@ def show_line_field(im, p1, p2):
 # Show the distance from ideal line on two examples
 xres, yres = 40, 30
 im = get_grayscale_image(xres, yres)
-    
+
 p1 = ( xres // 3, yres // 3 )
 p2 = ( 2 * xres // 3, 2 * yres // 3)
 
@@ -63,5 +63,5 @@ show_line_field(im, p1, p2)
 
 p1 = ( xres // 3, yres // 4 )
 p2 = ( 1.3 * xres // 3, 3 * yres // 4)
-    
+
 show_line_field(im, p1, p2)

@@ -46,4 +46,3 @@ for i in xrange(50):
 
 
 plt.ioff()
-
