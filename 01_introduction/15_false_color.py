@@ -10,13 +10,13 @@ def rgb2gray(rgb):
 
 if __name__=='__main__':
     if len(sys.argv) < 2:
-        print "usage: " + sys.argv[0] + " image_filename [colormap_name]"
+        print("usage: " + sys.argv[0] + " image_filename [colormap_name]")
         sys.exit(1)
     img = None
     try:
         img = mpimg.imread(sys.argv[1])
     except:
-        print "Error loading image: " + sys.argv[1]
+        print("Error loading image: " + sys.argv[1])
         sys.exit(-1)
 
     gray = rgb2gray(img)
@@ -27,12 +27,12 @@ if __name__=='__main__':
     axis[0].set_title('Grayscale')
 
     cmap_name = 'gist_rainbow' if len(sys.argv) <= 2 else sys.argv[2]
-    print "Using: %s as color map." % cmap_name
+    print("Using: %s as color map." % cmap_name)
     cmap = plt.get_cmap(cmap_name)
     try:
         cmap = plt.get_cmap(cmap_name)
     except ValueError:
-        print "Color map not found, exiting"
+        print("Color map not found, exiting")
         sys.exit(1)
 
     axis[1].imshow(gray, cmap = cmap, aspect = 1)

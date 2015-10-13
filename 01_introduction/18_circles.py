@@ -9,15 +9,15 @@ def filled_circle_slow(img, center, radius, value):
   """
 
   r2 = radius * radius
-  for i in xrange(img.shape[0]):    # rows
-    for j in xrange(img.shape[1]):  # columns
+  for i in range(img.shape[0]):    # rows
+    for j in range(img.shape[1]):  # columns
       if (center[0] - j) * (center[0] - j) + (center[1] - i) * (center[1] - i) <= r2:
         img[i][j] = value
   pass
 
 def filled_circle_scanline(img, center, radius, value):
   r2 = radius * radius
-  for i in xrange(center[1] - radius, center[1] + radius):
+  for i in range(center[1] - radius, center[1] + radius):
     width = int(math.sqrt (r2 - (center[1] - i) * (center[1] - i)))
     img[i][(center[0] - width):(center[0] + width)] = value
 

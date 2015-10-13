@@ -33,8 +33,8 @@ def demo_imagerepresentation(xres, yres):
 
 if __name__=='__main__':
 
-  print "Part 1 - Image as number array"
+  print("Part 1 - Image as number array")
   demo_imagerepresentation(20, 10)
 
 
-  print "End"
+  print("End")

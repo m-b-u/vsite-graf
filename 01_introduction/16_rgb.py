@@ -73,11 +73,11 @@ def demo_compositing(im_r, im_g, im_b, im_rgb):
 
 if __name__=='__main__':
 
-  print "Part 1 - Color image components"
+  print("Part 1 - Color image components")
 
   im_r, im_g, im_b, im_rgb = generate_gradient_components(20, 20)
 
   demo_components(im_r, im_g, im_b, im_rgb)
-  print "Part 2 - Color image compositing"
+  print("Part 2 - Color image compositing")
 
   demo_compositing(im_r, im_g, im_b, im_rgb)
