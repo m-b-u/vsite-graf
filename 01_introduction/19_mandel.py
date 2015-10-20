@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 and whether point is in Mandelbrot set"""
 def mandel_point(c, max_iter):
     z = 0
-    for i in xrange(max_iter):
+    for i in range(max_iter):
         z = z*z + c
         if abs(z) > 2.0:       # criteria for divergence
             return z, i, False
@@ -23,13 +23,13 @@ def render_mandel_iterative(img, ll_corner, ur_corner, max_iter = 100):
     size = get_image_size(img)
     x_axis = np.linspace(ll_corner.real, ur_corner.real, num=size[0])
     y_axis = np.linspace(ur_corner.imag, ll_corner.imag, num=size[1])
-    for i in xrange(size[1]):
-        for j in xrange(size[0]):
+    for i in range(size[1]):
+        for j in range(size[0]):
             val, iter, max_reached = mandel_point(complex(x_axis[j],y_axis[i]), max_iter)
             if not max_reached:
                 putpixel(img, j, i, iter)
 
-        print 
+        print() 
 
 if __name__=='__main__':
   xres, yres = (300, 200)
