@@ -27,6 +27,7 @@ def render_mandel_iterative(img, ll_corner, ur_corner, max_iter=100):
                 putpixel(img, j, i, iteration)
             else:
                 putpixel(img, j, i, 0)
+
 default_box = [complex(-2.5, -1.5), complex(1.5, 1.5)]
 box = default_box[:]
 
