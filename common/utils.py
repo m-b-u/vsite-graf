@@ -13,15 +13,15 @@ FIG_RESOLUTION (string): Set from FIG_RESOLUTION environment variable.
 
 """
 
+FIG_FORMAT = None
+FIG_RESOLUTION = None
+
 import numpy as np
 
 import sys
 import os.path
 import os
 import matplotlib.pyplot as plt
-
-FIG_FORMAT = os.environ.get('FIG_FORMAT', None)
-FIG_RESOLUTION = os.environ.get('FIG_RESOLUTION', None)
 
 
 def get_grayscale_image(xres, yres):
