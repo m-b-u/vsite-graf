@@ -43,7 +43,7 @@ def line_bresenham_int (img, x1, y1, x2, y2, value, putpixel=putpixel):
         if x2 < x1:
             y1, y2 = y2, y1
             x1, x2 = x2, x1
-        yy = 1 if y1 <= y2 else -1 # direction in which we increment x axis
+        yy = 1 if y1 <= y2 else -1 # direction in which we increment y axis
         y = y1
         D = 2*dy - dx
         for x in range(x1 + 1, x2 + 1):
