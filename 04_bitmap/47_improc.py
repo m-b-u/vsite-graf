@@ -81,7 +81,7 @@ class ImageHandlers(object):
                 num += 1
             else:
                 break
-        print "Saving to: %s" % out_file
+        print("Saving to: %s" % out_file)
         self.save_file(out_file, self.preview)
 
     def quit(self, event):
@@ -155,7 +155,7 @@ class ImageDialog(ImageHandlers):
         for i, b in enumerate(buttons):
             box = [start + i*hspace, 0.03,
                    hspace - padding, 0.035]
-            print box
+            print(box)
             axis = self.fig.add_axes(box)
                                       
             button = Button(axis, b[0])
