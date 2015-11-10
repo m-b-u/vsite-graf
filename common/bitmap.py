@@ -1,5 +1,12 @@
 """ Functions to draw bitmap over another bitmap.
-    Also derive 1-neighbourhood mask for given bitmap
+    Also derive 1-neighbourhood mask for given bitmap.
+    Mask definition is reverse to some ususal conventions,
+    So we do:
+      BACKGROUND & ~MASK
+      BACKGROUND | BITMAP instead of usual:
+
+      BACKGROUND & MASK
+      BACKGROUND | BITMAP
 """
 
 
@@ -38,8 +45,8 @@ def draw_bitmap_2(img, x, y, bitmap, mask=None):
     else:
         img[y:y+h, x:x+w] = bitmap
         # Try: To see "unexpected" effects of bitwise logical operations
-        # on 8-bit RGB images - comment out the line above, and comment one below
-        # img[y:y+h, x:x+w] |= bitmap
+        # on 8-bit RGB images - comment out the line above, and uncomment one below
+        #img[y:y+h, x:x+w] |= bitmap
 
 def mask_from_bitmap(img):
     """ Derive mask for blitting image img. Mask has value 255
