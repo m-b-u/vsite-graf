@@ -7,6 +7,8 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
+import os.path
+import sys
 
 from utils import get_component_view
 
@@ -70,11 +72,22 @@ class ImageHandlers(object):
 
     def save(self, event):
         """Save the modified image"""
-        pass
+        basename, ext = os.path.splitext(self.filename)
+        num = 1
+        out_file = ''
+        while True:
+            out_file = '%s_%d%s' % (basename, num, ext)
+            if os.path.exists(out_file):
+                num += 1
+            else:
+                break
+        print "Saving to: %s" % out_file
+        self.save_file(out_file, self.preview)
 
     def quit(self, event):
         """ Quit the application."""
-        pass
+
+        sys.exit(0)
 
 class ImageDialog(ImageHandlers):
     """ Control dialog for image editing actions"""
@@ -94,6 +107,10 @@ class ImageDialog(ImageHandlers):
         self.image = imgproc.convert_from_uint8(mpimg.imread(filename))
         self.preview = self.image.copy()
 
+    def save_file(self, filename, image):
+        """ Save modified buffer to specified filename """
+        mpimg.imsave(filename, imgproc.convert_to_uint8(image), vmin=0.0, vmax=0.0)
+        
     def setup_display(self):
         """ Set up figure for image buffers"""
         self.fig, axis = plt.subplots(2)
@@ -132,12 +149,15 @@ class ImageDialog(ImageHandlers):
                    ('Reset', self.reset),
                    ('Save', self.save),
                    ('Quit', self.quit)]
-        padding = 0.02
-        start, end = 0.1, 0.8
+        padding = 0.01
+        start, end = 0.03, 0.97
         hspace = (end - start) / len(buttons)
         for i, b in enumerate(buttons):
-            axis = self.fig.add_axes([start + i*hspace, 0.03,
-                                      start + (i+1)*hspace - padding, 0.03])
+            box = [start + i*hspace, 0.03,
+                   hspace - padding, 0.035]
+            print box
+            axis = self.fig.add_axes(box)
+                                      
             button = Button(axis, b[0])
             self.axes.append(axis)
 
@@ -146,6 +166,8 @@ class ImageDialog(ImageHandlers):
 
     def run(self):
         """ Start the dialog """
+        mng = plt.get_current_fig_manager()
+        mng.resize(*mng.window.maxsize())
         plt.show()
 
     def update_histogram(self):
