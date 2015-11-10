@@ -1,10 +1,10 @@
-""" Tests the draw_convex_polygon function
+""" Tests the draw_polygon function
     by drawing grid of adjacent rectangles - checkerboard pattern
 """
 
 from utils import get_grayscale_image, plt_show
 
-from polygon import draw_convex_polygon
+from polygon import draw_polygon
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -26,7 +26,7 @@ c = 0
 
 for i in range(pts.shape[0]-1):
     for j in range(pts.shape[1]-1):
-        draw_convex_polygon(img,
+        draw_polygon(img,
                             [pts[j][i], pts[j+1][i],
                              pts[j+1][i+1], pts[j][i+1]],
                             (((i+j) % 2) + 1) * 100)

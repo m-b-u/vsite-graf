@@ -101,7 +101,7 @@ def remove_leaving_edges(active_edge, y):
         if y > active_edge[i][0]:    # y > ymax, leave the bottom pixel
             del active_edge[i]
 
-def draw_convex_polygon(img, points, val):
+def draw_polygon(img, points, val):
     """ Draws polygon to image array using scanline conversion
 
     Arguments:
