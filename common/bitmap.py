@@ -1,10 +1,8 @@
 """ Functions to draw bitmap over another bitmap.
     Also derive 1-neighbourhood mask for given bitmap.
-    Mask definition is reverse to some ususal conventions,
+    Mask definition is: 0 - bitmap is used,
+                        nonzero - background is kept
     So we do:
-      BACKGROUND & ~MASK
-      BACKGROUND | BITMAP instead of usual:
-
       BACKGROUND & MASK
       BACKGROUND | BITMAP
 """
@@ -24,7 +22,7 @@ def draw_bitmap(img, x, y, bitmap, mask=None):
     for yi in range(h):
         for xi in range(w):
             # anything that is not 0 in mask means take that pixel
-            m = mask is None or getpixel(mask, xi, yi)
+            m = mask is None or not getpixel(mask, xi, yi)
             if m:
                 putpixel(img, x+xi, y+yi, getpixel(bitmap, xi, yi))
 
@@ -38,9 +36,9 @@ def draw_bitmap_2(img, x, y, bitmap, mask=None):
     if mask is not None:
         if img.ndim == 3:
             # take care of case with RGB image & single component mask
-            img[y:y+h, x:x+w] &= ~mask[:, :, np.newaxis]
+            img[y:y+h, x:x+w] &= mask[:, :, np.newaxis]
         elif img.ndim == 2:
-            img[y:y+h, x:x+w] &= ~mask
+            img[y:y+h, x:x+w] &= mask
         img[y:y+h, x:x+w] |= bitmap
     else:
         img[y:y+h, x:x+w] = bitmap
@@ -49,9 +47,9 @@ def draw_bitmap_2(img, x, y, bitmap, mask=None):
         #img[y:y+h, x:x+w] |= bitmap
 
 def mask_from_bitmap(img):
-    """ Derive mask for blitting image img. Mask has value 255
-    iff given pixel or any in its neighbourhood has
-    nonzero value, 0 otherwise"""
+    """ Derive mask for blitting image img. Mask has value 0
+    iff given pixel or any of its neighbours has
+    nonzero value, 255 otherwise"""
 
     mask = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
     w, h = get_image_size(img)
@@ -60,6 +58,6 @@ def mask_from_bitmap(img):
             # in this case neighbours include pixel itself
             neighbours = img[max(0, i-1) : min(i+1, h-1),
                              max(0, j-1) : min(j+1, w-1)]
-            mask[i][j] = 255 if np.any(neighbours) else 0
+            mask[i][j] = 0 if np.any(neighbours) else 255
 
     return mask
