@@ -4,7 +4,7 @@
 
 from utils import get_rgb_image, plt_show
 
-from polygon import draw_convex_polygon, plot_polygon
+from polygon import draw_polygon, plot_polygon
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -25,7 +25,7 @@ for i in xrange(15):
     pts = [(int(center[0] + p[0]*scale),
             int(center[1] + p[1]*scale)) for p in point]
 
-    draw_convex_polygon(img, pts, [i*10, 20+i*15, 50 + i*10])
+    draw_polygon(img, pts, [i*10, 20+i*15, 50 + i*10])
 
     plot_polygon(ax, pts, 'w')
     x, y = point[2]
