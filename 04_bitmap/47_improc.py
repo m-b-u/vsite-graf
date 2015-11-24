@@ -30,6 +30,18 @@ class ImageHandlers(object):
                                              (0.12, 0.8), (0., 1.), 1.0)
         self.update_display()
 
+    def do_levels_old(self, event):
+        """ Test levels with reduced output range """
+        self.preview = imgproc.adjust_levels(self.image,
+                                             (0., 1.), (0.3, 0.8), 1.0)
+        self.update_display()
+
+    def do_levels_clip(self, event):
+        """ Test levels with clipped input range """
+        self.preview = imgproc.adjust_levels(self.image,
+                                             (0.3, 0.8), (0., 1.), 1.8)
+        self.update_display()
+        
     def do_autolevels(self, event):
         """ Perform auto levels stretch"""
         self.preview = imgproc.auto_levels(self.image)
@@ -140,6 +152,8 @@ class ImageDialog(ImageHandlers):
         """ Set up button axes"""
         buttons = [('Auto levels', self.do_autolevels),
                    ('Levels1', self.do_levels_test),
+                   ('Oldie', self.do_levels_old),
+                   ('Clip', self.do_levels_clip),
                    ('Blur uniform', self.do_blur),
                    ('Blur gaussian', self.do_blur_gaussian),
                    ('Sharpen', self.do_sharpen),

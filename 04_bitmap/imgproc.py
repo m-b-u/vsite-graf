@@ -34,8 +34,9 @@ def adjust_levels(img, in_levels, out_levels, gamma=1.0):
         out_levels = (out_levels[0]/255.0, out_levels[1]/255.0)
         buf = convert_from_uint8(img)
     get_image_minmax(buf)
-    buf = np.power ((buf - in_levels[0]) / (in_levels[1] - in_levels[0]),
-                    1/gamma)
+    buf = (buf - in_levels[0]) / (in_levels[1] - in_levels[0])
+    np.clip(buf, 0., 1., out=buf)
+    buf = np.power (buf ,1/gamma)
     # if gamma is not 1 input image should be converted to [0-1] float values
 
     get_image_minmax(buf)
