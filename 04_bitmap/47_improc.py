@@ -150,33 +150,37 @@ class ImageDialog(ImageHandlers):
         
     def setup_controls(self):
         """ Set up button axes"""
-        buttons = [('Auto levels', self.do_autolevels),
+        buttons = [[('Auto levels', self.do_autolevels),
                    ('Levels1', self.do_levels_test),
                    ('Oldie', self.do_levels_old),
-                   ('Clip', self.do_levels_clip),
-                   ('Blur uniform', self.do_blur),
+                   ('Clip', self.do_levels_clip)],
+                   [('Blur uniform', self.do_blur),
                    ('Blur gaussian', self.do_blur_gaussian),
                    ('Sharpen', self.do_sharpen),
                    ('Unsharp', self.do_unsharp),
-                   ('Edge detection', self.do_edges),
-                   ('Apply', self.apply),
+                   ('Edge detection', self.do_edges)],
+                   [('Apply', self.apply),
                    ('Reset', self.reset),
                    ('Save', self.save),
-                   ('Quit', self.quit)]
+                    ('Quit', self.quit)]]
+        max_cols = max(len(row) for row in buttons)
         padding = 0.01
         start, end = 0.03, 0.97
-        hspace = (end - start) / len(buttons)
-        for i, b in enumerate(buttons):
-            box = [start + i*hspace, 0.03,
-                   hspace - padding, 0.035]
-            print box
-            axis = self.fig.add_axes(box)
-                                      
-            button = Button(axis, b[0])
-            self.axes.append(axis)
+        hspace = (end - start) / max_cols
+        row_height = 0.03
+        vspace = row_height + 0.003
+        for j, row in enumerate(buttons):
+            for i, b in enumerate(row):
+                box = [start + i*hspace, 0.01 + j*vspace,
+                       hspace - padding, row_height]
+                print box
+                axis = self.fig.add_axes(box)
 
-            button.on_clicked(b[1])
-            self.buttons.append(button)
+                button = Button(axis, b[0])
+                self.axes.append(axis)
+
+                button.on_clicked(b[1])
+                self.buttons.append(button)
 
     def run(self):
         """ Start the dialog """
