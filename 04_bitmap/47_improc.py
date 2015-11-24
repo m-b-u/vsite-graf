@@ -187,7 +187,8 @@ class ImageDialog(ImageHandlers):
     def update_histogram(self):
         for ax, im in zip(self.axishist, [self.image, self.preview]):
             im_ = get_component_view(im)
-            max_ = None 
+            max_ = None
+            ax.cla()
             for comp in ('r', 'g', 'b'):
                 n, bin, patches = ax.hist (im_[comp].ravel(), bins=256, histtype='stepfilled', color=comp, edgecolor='none', alpha=1 if comp=='r' else 0.8)
                 #min_ = np.min(n[1:-1])
