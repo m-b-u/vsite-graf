@@ -136,13 +136,15 @@ def sharpen(img):
     return apply_kernel(img, kernel)
 
 def unsharp(img):
-    """ Kernel op: 5x5 unsharp (without mask)"""
+    """ Kernel op: 5x5 unsharp (just the mask)"""
     kernel = np.array([[1., 4., 6., 4., 1.],
                       [4., 16., 24., 16., 4.],
                       [6., 24., -476., 24., 6],
                       [4., 16., 24., 16., 4.],
                       [1., 4., 6., 4., 1.]], dtype=np.float32)
-    kernel = normalize_kernel(kernel) 
+    # Normalize will be overzealous, and will negate the kernel
+    # So multiply it with -1
+    kernel = normalize_kernel(kernel) * -1 
     return apply_kernel(img, kernel)
 
 def edge_hv(img):
