@@ -30,7 +30,7 @@ function getShader(nodeId, typeStr) {
 function initGL() {
     var canvas = document.getElementById("canvas1");
     try {
-	gl = canvas.getContext("experimental-webgl");
+	gl = canvas.getContext("webgl");
 	gl = WebGLDebugUtils.makeDebugContext(gl);
 	gl.viewportWidth = canvas.clientWidth;
 	gl.viewportHeight = canvas.clientHeight;
