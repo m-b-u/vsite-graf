@@ -80,4 +80,5 @@ if __name__=='__main__':
   demo_components(im_r, im_g, im_b, im_rgb)
   print("Part 2 - Color image compositing")
 
+
   demo_compositing(im_r, im_g, im_b, im_rgb)

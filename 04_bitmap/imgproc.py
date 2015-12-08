@@ -34,8 +34,9 @@ def adjust_levels(img, in_levels, out_levels, gamma=1.0):
         out_levels = (out_levels[0]/255.0, out_levels[1]/255.0)
         buf = convert_from_uint8(img)
     get_image_minmax(buf)
-    buf = np.power ((buf - in_levels[0]) / (in_levels[1] - in_levels[0]),
-                    1/gamma)
+    buf = (buf - in_levels[0]) / (in_levels[1] - in_levels[0])
+    np.clip(buf, 0., 1., out=buf)
+    buf = np.power (buf ,1/gamma)
     # if gamma is not 1 input image should be converted to [0-1] float values
 
     get_image_minmax(buf)
@@ -135,13 +136,15 @@ def sharpen(img):
     return apply_kernel(img, kernel)
 
 def unsharp(img):
-    """ Kernel op: 5x5 unsharp (without mask)"""
+    """ Kernel op: 5x5 unsharp (just the mask)"""
     kernel = np.array([[1., 4., 6., 4., 1.],
                       [4., 16., 24., 16., 4.],
                       [6., 24., -476., 24., 6],
                       [4., 16., 24., 16., 4.],
                       [1., 4., 6., 4., 1.]], dtype=np.float32)
-    kernel = normalize_kernel(kernel) 
+    # Normalize will be overzealous, and will negate the kernel
+    # So multiply it with -1
+    kernel = normalize_kernel(kernel) * -1 
     return apply_kernel(img, kernel)
 
 def edge_hv(img):
