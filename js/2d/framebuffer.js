@@ -1,14 +1,17 @@
 
-function createFramebuffer(M,N) {
+function createFramebuffer(M, N) {
     var A = new Uint8Array(N*M);
     A.rows=N;
     A.columns=M;
     return A;
 }
 
-function clearFramebuffer(A) {
+function clearFramebuffer(A, fill) {
+    if (typeof fill == 'undefined') {
+	fill = " ".charCodeAt(0);      // default is space, but printFramebuffer needs to be fixed to show spaces correctly
+    }
     for (var i=0; i<A.length; ++i) {
-	A[i]=".".charCodeAt(0);
+	A[i] = fill;
     }
 }
 

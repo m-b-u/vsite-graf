@@ -5,7 +5,7 @@ function startExercise1() {
     var div = document.getElementById("main");
     
     var fb = createFramebuffer(60,15);
-    clearFramebuffer(fb);
+    clearFramebuffer(fb); 
     putPixel(fb, 3, 5, "*".charCodeAt(0));
 
     consoleprintFramebuffer(fb);
