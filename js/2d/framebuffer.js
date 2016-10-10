@@ -32,11 +32,13 @@ function getPixel(A, x, y) {
 }
 
 function printFramebuffer(elem,A) {
-    var list=document.createElement("ul");
+    var list = document.createElement("ul");
     for (var i=0; i<A.rows; ++i) {
 	var rowElem = document.createElement("li");
-	var text = document.createTextNode(new TextDecoder("utf-8").decode(A.subarray(i*A.columns, (i+1)*A.columns)));
-	rowElem.appendChild(text);
+	var text = new TextDecoder("utf-8").decode(A.subarray(i*A.columns, (i+1)*A.columns));
+	var tt = document.createElement("pre");
+	tt.innerHTML = text;
+	rowElem.appendChild(tt);
 	list.appendChild(rowElem);
     }
     elem.appendChild(list);

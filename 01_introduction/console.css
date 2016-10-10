@@ -17,3 +17,7 @@ ul {
     border: solid green;
     border-width: thin;
 }
+
+pre {
+    display: inline;
+}
