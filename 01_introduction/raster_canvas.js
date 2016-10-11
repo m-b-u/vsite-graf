@@ -75,6 +75,8 @@ function startExercise1b_canvas() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.scale(20,20);
 	context.imageSmoothingEnabled = false;
+	context.mozImageSmoothingEnabled = false;
+	context.webkitImageSmoothingEnabled = false;
 	context.drawImage(image, 0, 0);
     }
     image.src = canvasSmall.toDataURL();
