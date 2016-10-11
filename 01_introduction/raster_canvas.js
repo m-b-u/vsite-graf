@@ -61,6 +61,7 @@ function startExercise1b_canvas() {
     var imgData;
     
     var canvas = document.getElementById("fb1");
+    var context = canvas.getContext("2d");
     var canvasSmall = createImageData(canvas.width/20, canvas.height/20);
     imgData = getFrameBufferFromCanvas_ex(canvasSmall);
     clearFrameBuffer(imgData);
@@ -69,8 +70,15 @@ function startExercise1b_canvas() {
     var contextSmall = canvasSmall.getContext("2d");
     contextSmall.putImageData(imgData, 0, 0);
 
-    putFrameBufferToCanvas_ex(canvas, canvasSmall);
-
+    var image = new Image();
+    image.onload = function() {
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.scale(20,20);
+	context.imageSmoothingEnabled = false;
+	context.drawImage(image, 0, 0);
+    }
+    image.src = canvasSmall.toDataURL();
+    
     imgData = getFrameBufferFromCanvas("fb3");
     clearFrameBuffer(imgData);
     for (var i=0; i<100; i++) {
