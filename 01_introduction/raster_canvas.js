@@ -23,7 +23,9 @@ function putCanvasToCanvas_ex(canvas, canvasData) {
     ctx.drawImage(ctx2, 0, 0, canvas.width, canvas.height);
 }
 
-
+/* Clears the 32-bit framebuffer. Set the RGB components to 0 (black), 
+   but set the alpha to 255 (opaque)
+*/
 function clearFrameBuffer(fb) {
     for (var i=0; i<fb.data.length; ) {
 	fb.data[i++]=0;
@@ -33,15 +35,7 @@ function clearFrameBuffer(fb) {
     }
 }
 
-function putPixel(fb, x, y, value)
-{
-    i = (fb.width * y + x) * 4;
-    fb.data[i++] = value[0];
-    fb.data[i++] = value[1];
-    fb.data[i++] = value[2];
-    fb.data[i++] = value[3];
-}
-
+/* Direct set of RGBA components to specified offset in frame-buffer */
 function writeRGBA(fb, offset, value)
 {
     i = offset*4;
@@ -51,6 +45,15 @@ function writeRGBA(fb, offset, value)
     fb.data[i++] = value[3];
 }
 
+/* Sets the pixet at (x, y) coordinates to 32-bit value,
+   value is represented as array of 4 Uint8 components
+*/
+function putPixel(fb, x, y, value)
+{
+    writeRGBA(fb, fb.width * y + x, value) ;
+}
+
+/* Return RGBA array corresponding to opaque gray color */
 function gray(val) {
     return [val, val, val, 255];
 }
@@ -59,7 +62,7 @@ function getRandomInt(val) {
     return Math.floor(Math.random()*val);
 }
 
-function createImageData(width, height) {
+function createCanvas(width, height) {
     var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -84,7 +87,7 @@ function startExercise1b_canvas() {
     var canvas = document.getElementById("fb1");
     var context = canvas.getContext("2d");
     var scalex = 20, scaley = 20;
-    var canvasSmall = createImageData(canvas.width/scalex, canvas.height/scaley);
+    var canvasSmall = createCanvas(canvas.width/scalex, canvas.height/scaley);
 
     // Get this data as byte array
     imgData = getFrameBufferFromCanvas_ex(canvasSmall);
@@ -103,7 +106,7 @@ function startExercise1b_canvas() {
     image.src = canvasSmall.toDataURL();
     
     // Create new offscreen canvas (size w*h x 1)
-    canvasSmall = createImageData(canvasSmall.width*canvasSmall.height, 1);
+    canvasSmall = createCanvas(canvasSmall.width*canvasSmall.height, 1);
     contextSmall = canvasSmall.getContext("2d");
     // Again create image data
     imgData = getFrameBufferFromCanvas_ex(canvasSmall);

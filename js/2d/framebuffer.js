@@ -1,4 +1,8 @@
 
+/* Creates the Uint8Array, of dimension M*N, to 
+   represent our 8-bit deep frame-buffer. Mostly in browser contexts
+   we will get it from other sources, often 32-bit deep 
+*/
 function createFramebuffer(M, N) {
     var A = new Uint8Array(N*M);
     A.rows=N;
@@ -6,32 +10,31 @@ function createFramebuffer(M, N) {
     return A;
 }
 
+/* Clears the 8-bit frame-buffer, default fill is <SPACE> if not otherwise 
+   specified */
 function clearFramebuffer(A, fill) {
     if (typeof fill == 'undefined') {
-	fill = " ".charCodeAt(0);      // default is space, but printFramebuffer needs to be fixed to show spaces correctly
+	fill = " ".charCodeAt(0);
     }
     for (var i=0; i<A.length; ++i) {
 	A[i] = fill;
     }
 }
 
-function clearFramebuffer_1D(A) {
-    for (var i=0; i<A.rows; ++i) {
-	for (var j=0; j<A.columns; ++j) {
-	    A[i*A.columns+j]=0;
-	}
-    }
-}
-
+/* Put the 8-bit value to pixel at coordinate (x, y) */
 function putPixel(A, x, y, value) {
     A[y*A.columns+x] = value;
 }
 
+/* Returns the current pixel value at coordinates (x, y) */
 function getPixel(A, x, y) {
     return A[y*A.columns+x];
 }
 
-function printFramebuffer(elem,A) {
+/* This function will add ASCII representation of frame-buffer to 
+   specified element, added as <ul> list
+*/
+function printFramebuffer(elem ,A) {
     var list = document.createElement("ul");
     for (var i=0; i<A.rows; ++i) {
 	var rowElem = document.createElement("li");
@@ -46,6 +49,10 @@ function printFramebuffer(elem,A) {
 }
 
 
+/* This function will output the framebuffer to the browser console.
+   Note that most browsers nowadays collapse same output lines, 
+   so framebuffer look as if some lines are missing
+*/
 function consoleprintFramebuffer(A) {
     var hline = ['+'];
     for (var i=0; i<A.columns; ++i) {
