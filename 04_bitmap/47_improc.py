@@ -185,7 +185,11 @@ class ImageDialog(ImageHandlers):
     def run(self):
         """ Start the dialog """
         mng = plt.get_current_fig_manager()
-        mng.resize(*mng.window.maxsize())
+        if hasattr(mng.window, 'maxsize'):  # for TkAgg
+            mng.resize(*mng.window.maxsize())
+        elif hasattr(mng.window, 'showMaximized'): # for Qt4Agg
+            mng.window.showMaximized()
+
         plt.show()
 
     def update_histogram(self):
