@@ -94,6 +94,7 @@ def animate():
 
         dat.set_data(fb)
         fig.canvas.draw()
+        plt.pause(0.001)
 
     #fig.canvas.mpl_disconnect(hid)
 
