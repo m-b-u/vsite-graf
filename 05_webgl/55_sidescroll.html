@@ -5,6 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="stylesheet" type="text/css" href="1.css">
 
+    <!-- TODO: Fix viewport stuff so that it does not resize incorrectly with WebGL Inspector -->
+
 <script src="../js/gl-base.js" type="text/javascript" charset="utf-8"/>
 
 <script id="dummy"></script>
@@ -22,7 +24,7 @@
 
 <script id="shader-frag" type="x-shader/x-fragment">
     precision mediump float;
-    //§varying vec4 vColor;
+    // varying vec4 vColor;
     void main(void) {
 	//gl_FragColor = vColor;
 	gl_FragColor = vec4(0.50, 0.50, 0.57, 1);
@@ -57,10 +59,7 @@ var programSky = null;
 
 
 function doResize() {
-
-
     if (gl !== undefined) {
-
 	setViewportSize();
 	drawScene();
     }
@@ -78,8 +77,8 @@ function setViewportSize() {
 	canvas.height = h;
 
     console.log("Resize buffer size: " + gl.drawingBufferWidth + ", " + gl.drawingBufferHeight);
-
-
+    gl.uniform2f(programSky.resolutionUniform, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 }
 
 
@@ -162,19 +161,13 @@ function loadScene() {
     }
     vertices.push (1.0, y, -0.1);
     vertices.push (1.0, -1, -0.1);
-    //for (i=12; i<vertices.length; i+=3) {
-    //console.log("X=" + vertices[i]);
-    //}
-    //console.log("Scene generated, vertices: " + vertices.length/3 + " lastrefd: " + (last + 3) + " elems: " + elements.length);
-    //for (i=0; i<elements.length; ++i) {
-    //console.log("> " + elements[i++] + ", " + elements[i++] + ", " + elements[i]);
-    //}
-
-    //elements.push (last, last+1, last+2, last+2, last+3, last+1);
 
     vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(programSky.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
+
 
     elemBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elemBuffer); 
@@ -210,22 +203,17 @@ function updateScene() {
 }
 
 function drawScene() { 
-    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     
     gl.useProgram(programSky);
-    gl.uniform2f(programSky.resolutionUniform, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
-    gl.vertexAttribPointer(programSky.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 
     // Draw mountains
     gl.useProgram(shaderProgram);
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0); 
     gl.uniform2f(shaderProgram.translationUniform, -position/50.0, 0.);
     
     // Skip first two triangles

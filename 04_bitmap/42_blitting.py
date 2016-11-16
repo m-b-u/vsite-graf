@@ -27,6 +27,7 @@ for i in range(50):
     y += 3
     dat.set_data(fb)
     fig.canvas.draw()
+    plt.pause(0.0001) 
 
 mask = mask_from_bitmap(alien)
 
@@ -43,6 +44,7 @@ for i in range(50):
     y2 += 2
     dat.set_data(fb)
     fig.canvas.draw()
+    plt.pause(0.0001) 
 
 
 plt.ioff()

@@ -12,13 +12,19 @@ def show_line_test(xres, yres, line_func):
     a, b = 15, 10
 
     def test_line(center, segments, line_func):
+        x0 = center[0] + int(a*math.cos(0))
+        y0 = center[1] + int(b*math.sin(0))
+
         angle_step = 2*math.pi/segments
-        for i in range(segments):
+        for i in range(1, segments+1):
+
             angle = i * angle_step    # angle in radians
-            line_func (im, center[0], center[1],
-                       center[0] + int(a*math.cos(angle)),
-                       center[1] + int(b*math.sin(angle)),
+            x = center[0] + int(a*math.cos(angle))
+            y  = center[1] + int(b*math.sin(angle))
+            line_func (im, x0, y0, x, y, 
                        int(256.0*(i+1)/segments)-1)
+            x0 = x
+            y0 = y
 
     test_line(center, 12, line_func)
 

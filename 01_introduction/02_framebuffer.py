@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def clear_framebuffer(A):
     assert(A.ndim == 2) 
     for i in range(A.shape[0]):
