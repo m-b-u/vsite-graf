@@ -4,11 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<script src="../js/gl-base.js" type="text/javascript" charset="utf-8"/>
-
-<script id="dummy-dont-get-eaten">
-    Text to be ignored;
-</script>
+<script src="../js/gl-base.js" type="text/javascript" charset="utf-8"></script>
 
 <script id="shader-vert" type="x-shader/x-vertex">
     attribute vec4 vPosition;
@@ -95,7 +91,7 @@ var frame = 0;
 function drawScene() { 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+//    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
     var start = 0; 
     var len = 3;
@@ -104,7 +100,7 @@ function drawScene() {
 	len = Math.floor( Math.random() * (nVerts - start - 3)/3 ) * 3;
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+  //  gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
 
 
     console.log("Verts: " + start + ", len: " + len);
